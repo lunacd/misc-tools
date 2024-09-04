@@ -1,5 +1,5 @@
 #include <NfoEditorAutocomplete.hpp>
-#include <PathUtil.hpp>
+#include <SysUtil.hpp>
 #include <StrUtil.hpp>
 
 #include <filesystem>
@@ -20,7 +20,7 @@ namespace NfoEditor {
 namespace {
 std::filesystem::path
 getCompletionFilePath(const std::string &completionSource) {
-  return PathUtil::getProgramDataDir("nfo-editor") / "autocomplete" /
+  return SysUtil::getProgramDataDir("nfo-editor") / "autocomplete" /
          fmt::format("{}.txt", completionSource);
 }
 
