@@ -1,11 +1,9 @@
-add_library(util
-    StrUtil.cpp
-    SysUtil.cpp
-)
+add_library(util)
 
-target_sources(util PUBLIC FILE_SET HEADERS FILES
-    StrUtil.hpp
-    SysUtil.hpp
+target_sources(util PUBLIC FILE_SET CXX_MODULES FILES
+    Util.cppm
+    SysUtil.cppm
+    StrUtil.cppm
 )
 
 target_include_directories(util PRIVATE .)

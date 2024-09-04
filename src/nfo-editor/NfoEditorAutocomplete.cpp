@@ -1,6 +1,6 @@
+import lunacd.util;
+
 #include <NfoEditorAutocomplete.hpp>
-#include <SysUtil.hpp>
-#include <StrUtil.hpp>
 
 #include <filesystem>
 #include <fstream>

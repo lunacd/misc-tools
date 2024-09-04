@@ -1,4 +1,4 @@
-#include <SysUtil.hpp>
+import lunacd.util;
 
 #include <filesystem>
 #include <fstream>

@@ -1,10 +1,13 @@
-#include <StrUtil.hpp>
+module;
 
 #include <algorithm>
 #include <iterator>
+#include <string>
+
+export module lunacd.util:strUtil;
 
 namespace StrUtil {
-std::string_view trim(std::string_view input) {
+export std::string_view trim(std::string_view input) {
   const auto isNotSpace = [](const unsigned char ch) {
     return std::isspace(ch) == 0;
   };
@@ -19,7 +22,7 @@ std::string_view trim(std::string_view input) {
   return input;
 }
 
-std::string toLower(std::string_view input) {
+export std::string toLower(std::string_view input) {
   std::string result;
   std::ranges::transform(
       input, std::back_inserter(result),
