@@ -1,0 +1,15 @@
+<RCC>
+    <qresource prefix="/">
+        <file>NfoEditor.qml</file>
+        <file>LabeledInput.qml</file>
+        <file>LabeledListInput.qml</file>
+        <file>SuggestionBox.qml</file>
+        <file>SuggestionItem.qml</file>
+        <file>SuggestionPanel.qml</file>
+        <file>CustomButton.qml</file>
+        <file>RemovableItem.qml</file>
+
+        <file>icons/plus.svg</file>
+        <file>icons/x.svg</file>
+    </qresource>
+</RCC>
