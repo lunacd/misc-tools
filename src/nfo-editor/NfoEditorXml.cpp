@@ -1,5 +1,8 @@
 #include <NfoEditorXml.hpp>
 
+#include <fstream>
+#include <iostream>
+
 #include <fmt/format.h>
 #include <pugixml.hpp>
 
