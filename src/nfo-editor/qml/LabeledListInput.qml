@@ -14,11 +14,11 @@ FocusScope {
 
     function addItem() {
         let trimmedText = suggestionBox.text.trim();
-        if (trimmedText.length === 0 || items.contains(trimmedText)) {
+        suggestionBox.text = "";
+        if (trimmedText.length === 0 || items.includes(trimmedText)) {
             return;
         }
         items.push(trimmedText);
-        suggestionBox.text = "";
     }
 
     Text {
