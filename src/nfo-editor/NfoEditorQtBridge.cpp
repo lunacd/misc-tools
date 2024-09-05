@@ -1,8 +1,7 @@
 import lunacd.util;
+import lunacd.nfoEditor;
 
 #include <NfoEditorQtBridge.hpp>
-
-#include <NfoEditorXml.hpp>
 
 #include <algorithm>
 #include <iterator>

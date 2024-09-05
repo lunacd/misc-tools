@@ -7,10 +7,8 @@ find_package(Qt6 REQUIRED COMPONENTS Core Qml Quick Widgets)
 
 set(sources
     NfoEditor.cpp
-    qml/NfoEditor.qrc
-    NfoEditorAutocomplete.cpp
     NfoEditorQtBridge.cpp
-    NfoEditorXml.cpp
+    qml/NfoEditor.qrc
 )
 
 if (WIN32)
@@ -23,6 +21,12 @@ else ()
         ${sources}
     )
 endif ()
+
+target_sources(nfo-editor PRIVATE FILE_SET CXX_MODULES FILES
+    NfoEditorInterface.cppm
+    NfoEditorXml.cppm
+    NfoEditorAutocomplete.cppm
+)
 
 target_include_directories(nfo-editor PRIVATE .)
 

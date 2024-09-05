@@ -2,7 +2,7 @@
 
 #include <QObject>
 
-#include <NfoEditorAutocomplete.hpp>
+import lunacd.nfoEditor;
 
 namespace NfoEditor {
 class QtBridge : public QObject {
