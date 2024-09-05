@@ -1,9 +1,6 @@
-module;
-
-#include <mutex>
-#include <filesystem>
-
 export module lunacd.util:sysUtil;
+
+import std;
 
 namespace SysUtil {
 export std::string getEnv(const std::string &name) {

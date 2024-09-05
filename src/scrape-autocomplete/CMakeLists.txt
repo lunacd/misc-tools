@@ -1,5 +1,7 @@
-add_executable(scrape-autocomplete
-    scrapeAutocomplete.cpp
+add_executable(scrape-autocomplete)
+
+target_sources(scrape-autocomplete PRIVATE FILE_SET CXX_MODULES FILES
+    scrapeAutocomplete.cppm
 )
 
 find_package(pugixml REQUIRED)

@@ -1,10 +1,6 @@
-module;
-
-#include <algorithm>
-#include <iterator>
-#include <string>
-
 export module lunacd.util:strUtil;
+
+import std;
 
 namespace StrUtil {
 export std::string_view trim(std::string_view input) {
