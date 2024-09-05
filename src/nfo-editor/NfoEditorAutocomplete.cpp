@@ -100,7 +100,8 @@ Autocomplete::Completer::complete(const std::string &prefix) const {
 
   while (m_completionData->trie.predictive_search(agent) &&
          matches.size() < s_maxMatches) {
-    const auto *const match = agent.key().ptr();
+    const auto match =
+        std::string_view(agent.key().ptr(), agent.key().length());
     const auto &originalStrings =
         m_completionData->originalStrings.at(std::string(match));
     matches.insert(matches.end(), originalStrings.begin(),
