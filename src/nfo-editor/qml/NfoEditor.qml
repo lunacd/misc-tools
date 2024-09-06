@@ -100,7 +100,6 @@ ApplicationWindow
     FileDialog {
         id: fileDialog
         title: "Please choose where to save to"
-        folder: StandardPaths.standardLocations(StandardPaths.HomeLocation)[0]
         fileMode: FileDialog.SaveFile
         onAccepted: () => {
             bridge.saveToXml(currentFile, title.text.trim(), studio.text.trim(), actors.items, tags.items);

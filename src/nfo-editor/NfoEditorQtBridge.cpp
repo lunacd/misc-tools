@@ -1,12 +1,11 @@
-import lunacd.util;
-import lunacd.nfoEditor;
-
 #include <NfoEditorQtBridge.hpp>
 
-#include <algorithm>
 #include <iterator>
 
 #include <QUrl>
+
+import lunacd.util;
+import lunacd.nfoEditor;
 
 namespace NfoEditor {
 void QtBridge::registerCompletionSource(const QString &completionSource) {
