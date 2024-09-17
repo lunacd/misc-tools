@@ -45,10 +45,14 @@ FocusScope {
     }
 
     function acceptSuggestion() {
-        if (suggestionPanel.selectedIndex === undefined) {
+        if (suggestionPanel.model.length === 0) {
             return;
         }
-        textInput.text = suggestionPanel.model[suggestionPanel.selectedIndex];
+        if (suggestionPanel.selectedIndex === undefined) {
+            textInput.text = suggestionPanel.model[0];
+        } else {
+            textInput.text = suggestionPanel.model[suggestionPanel.selectedIndex];
+        }
         closeSuggestion();
     }
 
