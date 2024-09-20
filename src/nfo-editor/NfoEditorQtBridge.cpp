@@ -55,6 +55,6 @@ void QtBridge::saveToXml(const QUrl &filePath, const QString &title,
 
   const NfoData data{title.toStdString(), studio.toStdString(), stdActors,
                      stdTags};
-  data.saveToFile(filePath.toLocalFile().toStdString());
+  data.saveToFile(filePath.toLocalFile().toStdWString());
 }
 } // namespace NfoEditor
