@@ -12,7 +12,7 @@ import lunacd.util;
 namespace NfoEditor {
 std::filesystem::path
 getCompletionFilePath(const std::string &completionSource) {
-  return SysUtil::getProgramDataDir("nfo-editor") / "autocomplete" /
+  return Util::Sys::getProgramDataDir("nfo-editor") / "autocomplete" /
          fmt::format("{}.txt", completionSource);
 }
 
@@ -68,7 +68,7 @@ public:
     }
 
     void addCandidate(const std::string &candidate) const {
-      const auto candidateLower = StrUtil::toLower(candidate);
+      const auto candidateLower = Util::Str::toLower(candidate);
       m_completionData->keyset.push_back(candidateLower.c_str());
       m_completionData->trie.build(m_completionData->keyset);
       if (const auto it =
@@ -130,8 +130,8 @@ private:
     std::ifstream completionFile{completionFilePath};
     std::string line;
     while (std::getline(completionFile, line)) {
-      const auto candidate = std::string(StrUtil::trim(line));
-      const auto candidateLower = StrUtil::toLower(candidate);
+      const auto candidate = std::string(Util::Str::trim(line));
+      const auto candidateLower = Util::Str::toLower(candidate);
       if (candidate.empty()) {
         continue;
       }

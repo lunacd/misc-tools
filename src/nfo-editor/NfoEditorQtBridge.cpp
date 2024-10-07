@@ -15,7 +15,7 @@ void QtBridge::registerCompletionSource(const QString &completionSource) {
 QList<QString> QtBridge::autocomplete(const QString &completionSource,
                                       const QString &prefix) {
   // Convert prefix to lowercase before matching
-  const auto lowerPrefix = StrUtil::toLower(prefix.toStdString());
+  const auto lowerPrefix = Util::Str::toLower(prefix.toStdString());
 
   // Query backend for completion
   const auto completer =

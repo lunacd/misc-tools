@@ -62,7 +62,7 @@ private:
 
   [[nodiscard]] static std::filesystem::path
   getCompletionFilePath(std::string_view completionSource) {
-    return SysUtil::getProgramDataDir("nfo-editor") / "autocomplete" /
+    return Util::Sys::getProgramDataDir("nfo-editor") / "autocomplete" /
            fmt::format("{}.txt", completionSource);
   }
 };

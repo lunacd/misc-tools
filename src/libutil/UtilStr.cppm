@@ -2,7 +2,7 @@ export module lunacd.util:strUtil;
 
 import std;
 
-namespace StrUtil {
+namespace Util::Str {
 export std::string_view trim(std::string_view input) {
   const auto isNotSpace = [](const unsigned char ch) {
     return std::isspace(ch) == 0;
