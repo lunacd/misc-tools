@@ -2,10 +2,11 @@
 
 #include <iterator>
 
-#include <QUrl>
+#include <NfoEditorAutocomplete.hpp>
+#include <NfoEditorXml.hpp>
+#include <UtilStr.hpp>
 
-import lunacd.util;
-import lunacd.nfoEditor;
+#include <QUrl>
 
 namespace NfoEditor {
 void QtBridge::registerCompletionSource(const QString &completionSource) {
@@ -53,7 +54,7 @@ void QtBridge::saveToXml(const QUrl &filePath, const QString &title,
   std::ranges::transform(actors, std::back_inserter(stdActors), qStringToStd);
   std::ranges::transform(tags, std::back_inserter(stdTags), qStringToStd);
 
-  const NfoData data{title.toStdString(), studio.toStdString(), stdActors,
+  const Xml data{title.toStdString(), studio.toStdString(), stdActors,
                      stdTags};
   data.saveToFile(filePath.toLocalFile().toStdWString());
 }

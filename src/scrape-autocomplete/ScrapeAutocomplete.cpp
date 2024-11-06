@@ -1,9 +1,14 @@
+#include <filesystem>
+#include <fstream>
+#include <iostream>
+#include <string>
+#include <unordered_set>
+
+#include <UtilSys.hpp>
+
 #include <fmt/format.h>
 #include <fmt/xchar.h>
 #include <pugixml.hpp>
-
-import lunacd.util;
-import std;
 
 namespace ScrapeAutocomplete {
 class Scraper {

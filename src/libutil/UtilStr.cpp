@@ -1,9 +1,10 @@
-export module lunacd.util:strUtil;
+#include <UtilStr.hpp>
 
-import std;
+#include <algorithm>
+#include <string>
 
 namespace Util::Str {
-export std::string_view trim(std::string_view input) {
+std::string_view trim(std::string_view input) {
   const auto isNotSpace = [](const unsigned char ch) {
     return std::isspace(ch) == 0;
   };
@@ -18,11 +19,11 @@ export std::string_view trim(std::string_view input) {
   return input;
 }
 
-export std::string toLower(std::string_view input) {
+std::string toLower(std::string_view input) {
   std::string result;
   std::ranges::transform(
       input, std::back_inserter(result),
       [](const unsigned char ch) { return std::tolower(ch); });
   return result;
 }
-} // namespace StrUtil
+} // namespace Util::Str

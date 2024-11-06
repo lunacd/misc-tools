@@ -1,8 +1,8 @@
 #pragma once
 
-#include <QObject>
+#include <NfoEditorAutocomplete.hpp>
 
-import lunacd.nfoEditor;
+#include <QObject>
 
 namespace NfoEditor {
 class QtBridge : public QObject {

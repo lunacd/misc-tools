@@ -1,9 +1,11 @@
-add_library(util)
+add_library(util
+    UtilStr.cpp
+    UtilSys.cpp
+)
 
-target_sources(util PUBLIC FILE_SET CXX_MODULES FILES
-    Util.cppm
-    UtilSys.cppm
-    UtilStr.cppm
+target_sources(util PUBLIC FILE_SET HEADERS FILES
+    UtilStr.hpp
+    UtilSys.hpp
 )
 
 target_include_directories(util PRIVATE .)

@@ -1,15 +1,9 @@
-export module lunacd.util:sysUtil;
+#include <UtilSys.hpp>
 
-import std;
+#include <mutex>
 
 namespace Util::Sys {
-export std::string getEnv(const std::string &name) {
-  static std::mutex mutex;
-  std::lock_guard<std::mutex> lock{mutex};
-  const char *value = std::getenv(name.c_str());
-  return value != nullptr ? value : std::string{};
-}
-
+namespace {
 std::filesystem::path getUserDataDir() {
   if (const auto xdgDataHome = getEnv("XDG_DATA_HOME"); !xdgDataHome.empty()) {
     return xdgDataHome;
@@ -23,8 +17,16 @@ std::filesystem::path getUserDataDir() {
 
   return std::filesystem::path(getEnv(homeEnvVar)) / ".local" / "share";
 }
+} // namespace
 
-export std::filesystem::path getProgramDataDir(std::string_view programName) {
+std::string getEnv(const std::string &name) {
+  static std::mutex mutex;
+  std::lock_guard<std::mutex> lock{mutex};
+  const char *value = std::getenv(name.c_str());
+  return value != nullptr ? value : std::string{};
+}
+
+std::filesystem::path getProgramDataDir(std::string_view programName) {
   return getUserDataDir() / programName;
 }
-} // namespace SysUtil
+} // namespace Util::Sys
