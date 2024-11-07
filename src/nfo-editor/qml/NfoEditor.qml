@@ -4,6 +4,8 @@ import QtQuick.Layouts
 import QtQuick.Dialogs
 import Qt.labs.platform
 
+import com.lunacd.qml
+
 ApplicationWindow
 {
     id: window
@@ -80,14 +82,14 @@ ApplicationWindow
             RowLayout {
                 Layout.alignment: Qt.AlignRight
 
-                CustomButton {
+                LunacdButton {
                     text: "Clear"
                     onClicked: () => {
                         window.clearFields();
                     }
                 }
 
-                CustomButton {
+                LunacdButton {
                     text: "Save"
                     onClicked: () => {
                         fileDialog.visible = true;

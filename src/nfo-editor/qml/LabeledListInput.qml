@@ -2,6 +2,8 @@ import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls
 
+import com.lunacd.qml
+
 FocusScope {
     property alias text: suggestionBox.text
     property alias label: label.text
@@ -49,8 +51,8 @@ FocusScope {
                 onAccepted: () => addItem()
             }
 
-            CustomButton {
-                icon: "icons/plus.svg"
+            LunacdButton {
+                icon: "qrc:/com/lunacd/nfoEditor/icons/plus.svg"
                 onClicked: () => addItem()
             }
         }

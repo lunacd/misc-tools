@@ -1,12 +1,8 @@
-set(CMAKE_AUTOUIC ON)
-set(CMAKE_AUTOMOC ON)
-set(CMAKE_AUTORCC ON)
-set(CMAKE_AUTOUIC_SEARCH_PATHS .)
-
 find_package(Qt6 REQUIRED COMPONENTS Core Qml Quick Widgets)
 
+qt_standard_project_setup(REQUIRES 6.5)
+
 set(sources
-    qml/NfoEditor.qrc
     NfoEditor.cpp
     NfoEditorQtBridge.cpp
     NfoEditorXml.cpp
@@ -29,6 +25,22 @@ target_sources(nfo-editor PRIVATE FILE_SET HEADERS FILES
     NfoEditorAutocomplete.hpp
 )
 
+qt_add_qml_module(nfo-editor
+    URI com.lunacd.nfoEditor
+    QML_FILES
+        qml/LabeledInput.qml
+        qml/LabeledListInput.qml
+        qml/NfoEditor.qml
+        qml/RemovableItem.qml
+        qml/SuggestionBox.qml
+        qml/SuggestionItem.qml
+        qml/SuggestionPanel.qml
+    RESOURCES
+        icons/plus.svg
+        icons/x.svg
+    RESOURCE_PREFIX /
+)
+
 target_include_directories(nfo-editor PRIVATE .)
 
 find_package(fmt CONFIG REQUIRED)
@@ -46,3 +58,4 @@ target_link_libraries(nfo-editor PRIVATE Qt6::Qml Qt6::Quick Qt6::Widgets)
 qt_import_qml_plugins(nfo-editor)
 
 target_link_libraries(nfo-editor PRIVATE util)
+target_link_libraries(nfo-editor PRIVATE lunacd-qmlplugin)
