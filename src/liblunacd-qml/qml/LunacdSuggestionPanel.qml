@@ -3,33 +3,34 @@ import QtQuick.Layouts
 
 Item {
     property alias model: repeater.model
-    // Using var so that this could be undefined, indicating none is selected
     property var selectedIndex: undefined
 
     signal fill(text: string)
 
     id: suggestionPanel
     height: columnLayout.height
+    implicitHeight: columnLayout.height
 
     ColumnLayout {
         id: columnLayout
+        spacing: 0
         anchors.left: parent.left
         anchors.right: parent.right
-        spacing: 0
 
         Repeater {
             id: repeater
+            width: parent.width
 
-            SuggestionItem {
-                required property string modelData
+            delegate: LunacdSuggestionItem {
                 required property int index
+                required property string completionText
 
                 id: suggestionItem
-                text: modelData
-                Layout.fillWidth: true
+                text: completionText
                 selected: index === selectedIndex
+                Layout.fillWidth: true
 
-                onClicked: () => suggestionPanel.fill(modelData)
+                onClicked: () => suggestionPanel.fill(completionText)
             }
         }
     }

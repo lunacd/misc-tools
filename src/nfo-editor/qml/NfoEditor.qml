@@ -36,7 +36,7 @@ ApplicationWindow
             anchors.margins: 8
             spacing: 8
 
-            LabeledInput {
+            LunacdLabeledInput {
                 id: title
                 
                 label: "Title"
@@ -47,7 +47,7 @@ ApplicationWindow
                 autocomplete: false
             }
 
-            LabeledInput {
+            LunacdLabeledInput {
                 id: studio
 
                 label: "Studio"
@@ -107,14 +107,14 @@ ApplicationWindow
             bridge.saveToXml(currentFile, title.text.trim(), studio.text.trim(), actors.items, tags.items);
 
             // Save completion to file
-            bridge.addCompletionCandidate("studio", studio.text.trim());
+            LunacdQmlAutocomplete.addCompletionCandidate("studio", studio.text.trim());
             for (let actor of actors.items) {
-                bridge.addCompletionCandidate("actor", actor);
+                LunacdQmlAutocomplete.addCompletionCandidate("actor", actor);
             }
             for (let tag of tags.items) {
-                bridge.addCompletionCandidate("tag", tag);
+                LunacdQmlAutocomplete.addCompletionCandidate("tag", tag);
             } 
-            bridge.exportCompletionData();
+            LunacdQmlAutocomplete.exportCompletionData();
 
             window.clearFields();
         }

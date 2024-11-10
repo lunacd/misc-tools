@@ -8,7 +8,8 @@
 auto main(int argc, char **argv) -> int {
   QApplication app(argc, argv);
 
-  qmlRegisterType<NfoEditor::QtBridge>("com.lunacd", 0, 1, "NfoEditorQtBridge");
+  qmlRegisterType<NfoEditor::QtBridge>("com.lunacd.NfoEditorQtBridge", 0, 1,
+                                       "NfoEditorQtBridge");
 
   // Create bridge before the engine because they will be destructed in reverse
   // order.
@@ -20,7 +21,7 @@ auto main(int argc, char **argv) -> int {
   engine.rootContext()->setContextProperty("bridge", &bridge);
 
   engine.load(
-      QUrl(QStringLiteral("qrc:/com/lunacd/nfoEditor/qml/NfoEditor.qml")));
+      QUrl(QStringLiteral("qrc:/qt/qml/com/lunacd/nfoEditor/qml/NfoEditor.qml")));
 
   return QApplication::exec();
 }

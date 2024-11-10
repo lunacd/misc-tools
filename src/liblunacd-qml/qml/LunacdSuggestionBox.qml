@@ -1,6 +1,8 @@
 import QtQuick
 import QtQuick.Controls
 
+import com.lunacd.qml
+
 FocusScope {
     id: suggestionBox
 
@@ -16,12 +18,12 @@ FocusScope {
     height: rectangle.height
     Component.onCompleted: () => {
         if (autocomplete) {
-            bridge.registerCompletionSource(completionSource);
+            LunacdQmlAutocomplete.registerCompletionSource(completionSource);
         }
     }
-    
+
     function nextSuggestion() {
-        if (suggestionPanel.model.length === 0) {
+        if (suggestionPanel.model.count === 0) {
             suggestionPanel.selectedIndex = undefined;
         }
         if (suggestionPanel.selectedIndex === undefined) {
@@ -29,29 +31,29 @@ FocusScope {
         } else {
             suggestionPanel.selectedIndex += 1;
         }
-        suggestionPanel.selectedIndex %= suggestionPanel.model.length;
+        suggestionPanel.selectedIndex %= suggestionPanel.model.count;
     }
 
     function previousSuggestion() {
-        if (suggestionPanel.model.length === 0) {
+        if (suggestionPanel.model.count === 0) {
             suggestionPanel.selectedIndex = undefined;
         }
         if (suggestionPanel.selectedIndex === undefined) {
-            suggestionPanel.selectedIndex = suggestionBox.model.length - 1;
+            suggestionPanel.selectedIndex = suggestionBox.model.count - 1;
         } else {
             suggestionPanel.selectedIndex -= 1;
         }
-        suggestionPanel.selectedIndex %= suggestionPanel.model.length;
+        suggestionPanel.selectedIndex %= suggestionPanel.model.count;
     }
 
     function acceptSuggestion() {
-        if (suggestionPanel.model.length === 0) {
+        if (suggestionPanel.model.count === 0) {
             return;
         }
         if (suggestionPanel.selectedIndex === undefined) {
-            textInput.text = suggestionPanel.model[0];
+            textInput.text = suggestionPanel.model.get(0).completionText;
         } else {
-            textInput.text = suggestionPanel.model[suggestionPanel.selectedIndex];
+            textInput.text = suggestionPanel.model.get(suggestionPanel.selectedIndex).completionText;
         }
         closeSuggestion();
     }
@@ -88,7 +90,9 @@ FocusScope {
                 suggestionBox.previousSuggestion()
             }
 
-            onTextEdited: () => suggestionPopup.open()
+            onTextEdited: () => {
+                suggestionPanel.updateCompletion(textInput.text);
+            }
             onAccepted: () => {
                 suggestionBox.acceptSuggestion();
                 suggestionBox.accepted();
@@ -105,7 +109,7 @@ FocusScope {
             x: 0
             y: parent.height
             width: parent.width
-            height: suggestionPanel.height
+            height: suggestionPanel.implicitHeight
 
             bottomPadding: 0
             leftPadding: 0
@@ -114,22 +118,27 @@ FocusScope {
 
             closePolicy: Popup.NoAutoClose
 
-            background: Rectangle {
-                anchors.fill: parent
-                color: "white"
-            }
-
-            SuggestionPanel {
-                function getCompletion(prefix) {
+            LunacdSuggestionPanel {
+                function updateCompletion(prefix) {
+                    suggestionPanel.model.clear();
                     if (!autocomplete || prefix.length <= 1) {
-                        return []
+                        return;
                     }
-                    return bridge.autocomplete(completionSource, prefix)
+
+                    const completions = LunacdQmlAutocomplete.autocomplete(completionSource, prefix);
+                    completions.forEach(completion => {
+                        suggestionPanel.model.append({"completionText": completion});
+                    });
+                    if (completions.length > 0) {
+                        suggestionPopup.open();
+                    }
                 }
 
                 id: suggestionPanel
-                anchors.fill: parent
-                model: getCompletion(textInput.text)
+                anchors.left: parent.left
+                anchors.right: parent.right
+
+                model: ListModel { }
                 onFill: (text) => {
                     textInput.text = text;
                     suggestionBox.closeSuggestion();

@@ -13,7 +13,7 @@ FocusScope {
         id: label
     }
 
-    SuggestionBox {
+    LunacdSuggestionBox {
         id: suggestionBox        
         anchors.top: label.bottom
         anchors.left: parent.left

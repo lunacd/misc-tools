@@ -1,16 +1,33 @@
 #pragma once
 
 #include <memory>
+#include <qobject.h>
+#include <qtmetamacros.h>
 #include <unordered_map>
 #include <unordered_set>
 #include <vector>
 
+#include <QObject>
+#include <QQmlEngine>
 #include <marisa/keyset.h>
 #include <marisa/trie.h>
+#include <qqml.h>
 
-namespace NfoEditor {
-class Autocomplete {
+namespace LunacdQml {
+class Autocomplete : public QObject {
+  Q_OBJECT
+  QML_NAMED_ELEMENT(LunacdQmlAutocomplete)
+  QML_SINGLETON
 public:
+  Autocomplete(QObject *parent = nullptr) : QObject(parent) {}
+
+  Q_INVOKABLE void registerCompletionSource(const QString &completionSource);
+  Q_INVOKABLE QList<QString> autocomplete(const QString &completionSource,
+                                          const QString &prefix);
+  Q_INVOKABLE void addCompletionCandidate(const QString &completionSource,
+                                          const QString &candidate);
+  Q_INVOKABLE void exportCompletionData() const;
+
   struct CompletionData {
     marisa::Trie trie;
     marisa::Keyset keyset;
@@ -32,13 +49,7 @@ public:
     std::shared_ptr<CompletionData> m_completionData;
   };
 
-  Autocomplete() = default;
-
-  void registerCompletionSource(const std::string &completionSource);
-
   Completer getCompleter(const std::string &completionSource);
-
-  void exportCompletionData() const;
 
 private:
   // Map from completion source name to the corresponding completion data
@@ -50,4 +61,4 @@ private:
   static std::shared_ptr<CompletionData>
   buildCompletionData(const std::string &completionSource);
 };
-} // namespace NfoEditor
+} // namespace LunacdQml

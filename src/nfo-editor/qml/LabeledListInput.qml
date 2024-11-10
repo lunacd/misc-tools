@@ -39,7 +39,7 @@ FocusScope {
             spacing: 4
             Layout.fillWidth: true
 
-            SuggestionBox {
+            LunacdSuggestionBox {
                 id: suggestionBox        
 
                 Layout.fillWidth: true
@@ -52,7 +52,7 @@ FocusScope {
             }
 
             LunacdButton {
-                icon: "qrc:/com/lunacd/nfoEditor/icons/plus.svg"
+                icon: "qrc:/qt/qml/com/lunacd/nfoEditor/icons/plus.svg"
                 onClicked: () => addItem()
             }
         }

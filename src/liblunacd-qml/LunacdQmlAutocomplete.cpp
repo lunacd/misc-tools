@@ -1,4 +1,4 @@
-#include <NfoEditorAutocomplete.hpp>
+#include <LunacdQmlAutocomplete.hpp>
 
 #include <filesystem>
 #include <fstream>
@@ -13,7 +13,7 @@
 #include <marisa/keyset.h>
 #include <marisa/trie.h>
 
-namespace NfoEditor {
+namespace LunacdQml {
 namespace {
 std::filesystem::path
 getCompletionFilePath(const std::string &completionSource) {
@@ -38,8 +38,39 @@ void exportCompletionToFile(
   }
 }
 } // namespace
+void Autocomplete::registerCompletionSource(const QString &completionSource) {
+  getCompleter(completionSource.toStdString());
+}
 
-[[nodiscard]] std::vector<std::string>
+QList<QString> Autocomplete::autocomplete(const QString &completionSource,
+                                          const QString &prefix) {
+  // Convert prefix to lowercase before matching
+  const auto lowerPrefix = Util::Str::toLower(prefix.toStdString());
+
+  // Query backend for completion
+  const auto completer = getCompleter(completionSource.toStdString());
+  const auto matches = completer.complete(lowerPrefix);
+  QList<QString> qResult;
+  for (const auto &match : matches) {
+    qResult.append(QString::fromStdString(match));
+  }
+  return qResult;
+}
+
+void Autocomplete::addCompletionCandidate(const QString &completionSource,
+                                          const QString &candidate) {
+  const auto completer = getCompleter(completionSource.toStdString());
+  completer.addCandidate(candidate.toStdString());
+}
+
+void Autocomplete::exportCompletionData() const {
+  for (const auto &[completionSourceName, completionData] : m_completionData) {
+    exportCompletionToFile(completionSourceName,
+                           completionData->originalStrings);
+  }
+}
+
+std::vector<std::string>
 Autocomplete::Completer::complete(const std::string &prefix) const {
   marisa::Agent agent;
   agent.set_query(prefix.c_str());
@@ -72,11 +103,6 @@ void Autocomplete::Completer::addCandidate(const std::string &candidate) const {
   }
 }
 
-void Autocomplete::registerCompletionSource(
-    const std::string &completionSource) {
-  getCompleter(completionSource);
-}
-
 Autocomplete::Completer
 Autocomplete::getCompleter(const std::string &completionSource) {
   auto it = m_completionData.find(completionSource);
@@ -86,13 +112,6 @@ Autocomplete::getCompleter(const std::string &completionSource) {
   }
 
   return Completer{it->second};
-}
-
-void Autocomplete::exportCompletionData() const {
-  for (const auto &[completionSourceName, completionData] : m_completionData) {
-    exportCompletionToFile(completionSourceName,
-                           completionData->originalStrings);
-  }
 }
 
 std::shared_ptr<Autocomplete::CompletionData>
@@ -127,4 +146,4 @@ Autocomplete::buildCompletionData(const std::string &completionSource) {
 
   return completionData;
 }
-} // namespace NfoEditor
+} // namespace LunacdQml

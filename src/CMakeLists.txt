@@ -1,3 +1,11 @@
+# Dependencies
+find_package(fmt REQUIRED)
+find_package(pugixml REQUIRED)
+find_package(PkgConfig REQUIRED)
+pkg_check_modules(marisa REQUIRED IMPORTED_TARGET marisa)
+find_package(Qt6 REQUIRED COMPONENTS Core Qml Quick Widgets)
+
+# Projects
 add_subdirectory(libutil)
 add_subdirectory(liblunacd-qml)
 add_subdirectory(scrape-autocomplete)
