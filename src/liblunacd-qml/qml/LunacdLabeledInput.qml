@@ -3,8 +3,8 @@ import QtQuick
 FocusScope {
     property alias text: suggestionBox.text
     property alias label: label.text
-    required property bool autocomplete
-    property string completionSource
+    property bool autocomplete: false
+    property string completionSource: ""
 
     id: labeledInput
     height: label.height + suggestionBox.height + suggestionBox.anchors.topMargin
