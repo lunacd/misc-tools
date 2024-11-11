@@ -1,0 +1,11 @@
+[requires]
+fmt/11.0.2
+marisa/0.2.6
+pugixml/1.14
+
+[generators]
+CMakeDeps
+CMakeToolchain
+
+[layout]
+cmake_layout
