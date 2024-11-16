@@ -21,23 +21,23 @@ QtBridge::QtBridge(QObject *parent) : QObject(parent) {
 void QtBridge::transformImages(const QList<QUrl> &images, int targetWidth) {
   QFuture<void> future = QtConcurrent::run([this, images, targetWidth]() {
     for (const auto &imageUrl : images) {
-      std::filesystem::path imagePath = imageUrl.toLocalFile().toStdWString();
+      std::filesystem::path imagePath = imageUrl.toLocalFile().toStdString();
       Magick::Image image;
-      image.read(imagePath);
+      image.read(imagePath.generic_string());
       image.strip();
       image.quality(95);
       const int currentWidth = image.columns();
       if (currentWidth > targetWidth) {
         image.resize(Magick::Geometry(fmt::format("{}x", targetWidth)));
       }
-      image.defineSet("webp", "lossless", "true");
+      image.defineValue("webp", "lossless", "true");
 
       const std::filesystem::path outputDir =
           imagePath.parent_path() / "converted";
       std::filesystem::create_directories(outputDir);
       const std::filesystem::path outputPath =
           outputDir / fmt::format("{}.webp", imagePath.stem().string());
-      image.write(outputPath);
+      image.write(outputPath.generic_string());
     }
   });
   m_futureWatcher.setFuture(future);
