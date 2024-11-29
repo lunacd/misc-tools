@@ -1,4 +1,4 @@
-#include <LunacdQmlAutocomplete.hpp>
+#include <NfoEditorAutocomplete.hpp>
 
 #include <filesystem>
 #include <fstream>
@@ -13,7 +13,7 @@
 #include <marisa/keyset.h>
 #include <marisa/trie.h>
 
-namespace LunacdQml {
+namespace NfoEditor {
 namespace {
 std::filesystem::path
 getCompletionFilePath(const std::string &completionSource) {
@@ -38,29 +38,31 @@ void exportCompletionToFile(
   }
 }
 } // namespace
-void Autocomplete::registerCompletionSource(const QString &completionSource) {
-  getCompleter(completionSource.toStdString());
+void Autocomplete::registerCompletionSource(
+    const std::string &completionSource) {
+  getCompleter(completionSource);
 }
 
-QList<QString> Autocomplete::autocomplete(const QString &completionSource,
-                                          const QString &prefix) {
+std::vector<std::string>
+Autocomplete::autocomplete(const std::string &completionSource,
+                           const std::string &prefix) {
   // Convert prefix to lowercase before matching
-  const auto lowerPrefix = Util::Str::toLower(prefix.toStdString());
+  const auto lowerPrefix = Util::Str::toLower(prefix);
 
   // Query backend for completion
-  const auto completer = getCompleter(completionSource.toStdString());
+  const auto completer = getCompleter(completionSource);
   const auto matches = completer.complete(lowerPrefix);
-  QList<QString> qResult;
+  std::vector<std::string> qResult;
   for (const auto &match : matches) {
-    qResult.append(QString::fromStdString(match));
+    qResult.emplace_back(match);
   }
   return qResult;
 }
 
-void Autocomplete::addCompletionCandidate(const QString &completionSource,
-                                          const QString &candidate) {
-  const auto completer = getCompleter(completionSource.toStdString());
-  completer.addCandidate(candidate.toStdString());
+void Autocomplete::addCompletionCandidate(const std::string &completionSource,
+                                          const std::string &candidate) {
+  const auto completer = getCompleter(completionSource);
+  completer.addCandidate(candidate);
 }
 
 void Autocomplete::exportCompletionData() const {

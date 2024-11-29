@@ -1,27 +1,36 @@
-#include <QApplication>
-#include <QQmlApplicationEngine>
-#include <QQmlContext>
-#include <qqml.h>
+#include <NfoEditorController.hpp>
+#include <UtilOat.hpp>
 
-#include <NfoEditorQtBridge.hpp>
+#include <memory>
+
+#include <oatpp/network/Server.hpp>
+#include <oatpp/network/tcp/server/ConnectionProvider.hpp>
+#include <oatpp/parser/json/mapping/ObjectMapper.hpp>
+#include <oatpp/web/server/HttpConnectionHandler.hpp>
+
+void runServer() {
+  // Create app components
+  Util::Oat::AppComponent components;
+
+  OATPP_COMPONENT(std::shared_ptr<oatpp::web::server::HttpRouter>, router);
+
+  /* Routes */
+  router->addController(std::make_shared<NfoEditor::Controller>());
+
+  OATPP_COMPONENT(std::shared_ptr<oatpp::network::ConnectionHandler>,
+                  connectionHandler);
+  OATPP_COMPONENT(std::shared_ptr<oatpp::network::ServerConnectionProvider>,
+                  connectionProvider);
+
+  oatpp::network::Server server(connectionProvider, connectionHandler);
+
+  server.run();
+}
 
 auto main(int argc, char **argv) -> int {
-  QApplication app(argc, argv);
+  oatpp::base::Environment::init();
 
-  qmlRegisterType<NfoEditor::QtBridge>("com.lunacd.NfoEditorQtBridge", 0, 1,
-                                       "NfoEditorQtBridge");
+  runServer();
 
-  // Create bridge before the engine because they will be destructed in reverse
-  // order.
-  NfoEditor::QtBridge bridge;
-
-  QQmlApplicationEngine engine;
-
-  // Set bridge as a property of root context
-  engine.rootContext()->setContextProperty("bridge", &bridge);
-
-  engine.load(
-      QUrl(QStringLiteral("qrc:/qt/qml/com/lunacd/nfoEditor/qml/NfoEditor.qml")));
-
-  return QApplication::exec();
+  oatpp::base::Environment::destroy();
 }

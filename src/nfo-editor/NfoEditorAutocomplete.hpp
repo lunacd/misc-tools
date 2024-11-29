@@ -1,32 +1,23 @@
 #pragma once
 
 #include <memory>
-#include <qobject.h>
-#include <qtmetamacros.h>
+#include <string>
 #include <unordered_map>
 #include <unordered_set>
 #include <vector>
 
-#include <QObject>
-#include <QQmlEngine>
 #include <marisa/keyset.h>
 #include <marisa/trie.h>
-#include <qqml.h>
 
-namespace LunacdQml {
-class Autocomplete : public QObject {
-  Q_OBJECT
-  QML_NAMED_ELEMENT(LunacdQmlAutocomplete)
-  QML_SINGLETON
+namespace NfoEditor {
+class Autocomplete {
 public:
-  Autocomplete(QObject *parent = nullptr) : QObject(parent) {}
-
-  Q_INVOKABLE void registerCompletionSource(const QString &completionSource);
-  Q_INVOKABLE QList<QString> autocomplete(const QString &completionSource,
-                                          const QString &prefix);
-  Q_INVOKABLE void addCompletionCandidate(const QString &completionSource,
-                                          const QString &candidate);
-  Q_INVOKABLE void exportCompletionData() const;
+  void registerCompletionSource(const std::string &completionSource);
+  std::vector<std::string> autocomplete(const std::string &completionSource,
+                                        const std::string &prefix);
+  void addCompletionCandidate(const std::string &completionSource,
+                              const std::string &candidate);
+  void exportCompletionData() const;
 
   struct CompletionData {
     marisa::Trie trie;
@@ -56,9 +47,9 @@ private:
   std::unordered_map<std::string, std::shared_ptr<CompletionData>>
       m_completionData;
 
-  static constexpr size_t s_maxMatches = 5;
+  static constexpr size_t s_maxMatches = 10;
 
   static std::shared_ptr<CompletionData>
   buildCompletionData(const std::string &completionSource);
 };
-} // namespace LunacdQml
+} // namespace NfoEditor
