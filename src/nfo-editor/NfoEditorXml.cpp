@@ -1,10 +1,12 @@
 #include <NfoEditorXml.hpp>
 
+#include <filesystem>
+
 #include <fmt/format.h>
 #include <pugixml.hpp>
 
 namespace NfoEditor {
-void Xml::saveToFile(const std::filesystem::path &path) const {
+void Xml::saveToFile(const std::string &filename) const {
   pugi::xml_document doc;
   pugi::xml_node root = doc.append_child("movie");
 
@@ -28,7 +30,7 @@ void Xml::saveToFile(const std::filesystem::path &path) const {
   // If the given path has no extension, give it .nfo extension
   // If the given path has another extension, replace it with .nfo
   // This is useful for generating nfo files for another existing file.
-  auto pathToSave = path;
+  auto pathToSave = std::filesystem::path() / filename;
   pathToSave.replace_extension("nfo");
 
   if (!doc.save_file(pathToSave.c_str())) {

@@ -20,6 +20,7 @@ public:
   Controller(OATPP_COMPONENT(std::shared_ptr<ObjectMapper>, objectMapper))
       : oatpp::web::server::api::ApiController(objectMapper) {}
 
+  ADD_CORS(complete, "*")
   ENDPOINT("GET", "/nfoEditor/complete", complete, QUERY(String, source),
            QUERY(String, str)) {
     auto completer = m_autocomplete.getCompleter(source);
@@ -32,8 +33,10 @@ public:
     return createDtoResponse(Status::CODE_200, dto);
   }
 
-  ENDPOINT("POST", "/nfoEditor/saveToNfo", saveToXml,
+  ADD_CORS(saveToNfo, "*")
+  ENDPOINT("POST", "/nfoEditor/saveToNfo", saveToNfo,
            BODY_DTO(Object<NfoEditorSaveToNfoRequest>, dto)) {
+    OATPP_LOGI("saveToNfo", "Saving");
     // Save autocompletion data
     auto completer = m_autocomplete.getCompleter("studio");
     completer.addCandidate(dto->studio);
@@ -45,15 +48,18 @@ public:
     for (const auto &tag : *dto->tags) {
       completer.addCandidate(tag);
     }
+    m_autocomplete.exportCompletionData();
 
     // Save nfo to file
+    OATPP_LOGI("saveToNfo", "Exporting to file");
     const Xml data{
         dto->title, dto->studio,
         Util::Oat::oatppVectorToStdVector<std::string, oatpp::String>(
             dto->actors),
         Util::Oat::oatppVectorToStdVector<std::string, oatpp::String>(
             dto->tags)};
-    data.saveToFile(std::filesystem::path(dto->filePath));
+
+    data.saveToFile(dto->filename);
     return createResponse(Status::CODE_200, "");
   }
 

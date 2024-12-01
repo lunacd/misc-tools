@@ -13,7 +13,7 @@ class NfoEditorSaveToNfoRequest : public oatpp::DTO {
 
   DTO_INIT(NfoEditorSaveToNfoRequest, DTO)
 
-  DTO_FIELD(String, filePath);
+  DTO_FIELD(String, filename);
   DTO_FIELD(String, title);
   DTO_FIELD(String, studio);
   DTO_FIELD(Vector<String>, actors);
