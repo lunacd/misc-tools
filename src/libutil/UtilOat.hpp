@@ -8,7 +8,7 @@
 #include <oatpp/parser/json/mapping/ObjectMapper.hpp>
 #include <oatpp/web/server/HttpConnectionHandler.hpp>
 
-namespace Util::Oat {
+namespace Lunacd::Util::Oat {
 class AppComponent {
 public:
   /**
@@ -57,4 +57,4 @@ std::vector<T1> oatppVectorToStdVector(const oatpp::Vector<T2> &oatppVec) {
   std::copy(oatppVec->begin(), oatppVec->end(), std::back_inserter(stdVec));
   return stdVec;
 }
-} // namespace Util::Oat
+} // namespace Lunacd::Util::Oat

@@ -5,7 +5,7 @@
 #include <fmt/format.h>
 #include <pugixml.hpp>
 
-namespace NfoEditor {
+namespace Lunacd::NfoEditor {
 void Xml::saveToFile(const std::string &filename) const {
   pugi::xml_document doc;
   pugi::xml_node root = doc.append_child("movie");

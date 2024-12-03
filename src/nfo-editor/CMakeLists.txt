@@ -5,12 +5,14 @@ target_sources(nfo-editor PRIVATE
     NfoEditorXml.cpp
     NfoEditorController.cpp
     NfoEditorAutocomplete.cpp
+    NfoEditorStaticController.cpp
 )
 
 target_sources(nfo-editor PRIVATE FILE_SET HEADERS FILES
     NfoEditorXml.hpp
     NfoEditorController.hpp
     NfoEditorAutocomplete.hpp
+    NfoEditorStaticController.hpp
     dto/NfoEditorAutocompleteResponse.hpp
 )
 

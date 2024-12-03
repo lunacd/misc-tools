@@ -2,7 +2,7 @@
 
 #include <mutex>
 
-namespace Util::Sys {
+namespace Lunacd::Util::Sys {
 namespace {
 std::filesystem::path getUserDataDir() {
   if (const auto xdgDataHome = getEnv("XDG_DATA_HOME"); !xdgDataHome.empty()) {

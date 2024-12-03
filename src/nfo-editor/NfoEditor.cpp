@@ -1,4 +1,5 @@
 #include <NfoEditorController.hpp>
+#include <NfoEditorStaticController.hpp>
 #include <UtilOat.hpp>
 
 #include <memory>
@@ -8,6 +9,8 @@
 #include <oatpp/parser/json/mapping/ObjectMapper.hpp>
 #include <oatpp/web/server/HttpConnectionHandler.hpp>
 
+using namespace Lunacd;
+
 void runServer() {
   // Create app components
   Util::Oat::AppComponent components;
@@ -16,6 +19,7 @@ void runServer() {
 
   /* Routes */
   router->addController(std::make_shared<NfoEditor::Controller>());
+  router->addController(std::make_shared<NfoEditor::StaticController>());
 
   OATPP_COMPONENT(std::shared_ptr<oatpp::network::ConnectionHandler>,
                   connectionHandler);

@@ -10,7 +10,7 @@
 #include <fmt/xchar.h>
 #include <pugixml.hpp>
 
-namespace ScrapeAutocomplete {
+namespace Lunacd::ScrapeAutocomplete {
 class Scraper {
 public:
   void load(const std::filesystem::path &path) {
@@ -71,9 +71,11 @@ private:
            fmt::format("{}.txt", completionSource);
   }
 };
-} // namespace ScrapeAutocomplete
+} // namespace Lunacd::ScrapeAutocomplete
 
 int main(int argc, char **argv) {
+  using namespace Lunacd;
+
   if (argc != 2) {
     std::cerr << "scrape-autocomplete [directory to scrape]\n";
   }

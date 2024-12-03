@@ -2,8 +2,9 @@
 
 #include <algorithm>
 #include <string>
+#include <string_view>
 
-namespace Util::Str {
+namespace Lunacd::Util::Str {
 std::string_view trim(std::string_view input) {
   const auto isNotSpace = [](const unsigned char ch) {
     return std::isspace(ch) == 0;
@@ -26,4 +27,14 @@ std::string toLower(std::string_view input) {
       [](const unsigned char ch) { return std::tolower(ch); });
   return result;
 }
-} // namespace Util::Str
+
+std::vector<std::string> split(std::string_view input, char delim) {
+  std::vector<std::string> result;
+  size_t start = 0;
+  size_t next = input.find(delim, start);
+  while (start != std::string_view::npos) {
+    result.emplace_back(input.substr(start, next));
+  }
+  return result;
+}
+} // namespace Lunacd::Util::Str

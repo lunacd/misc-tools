@@ -12,7 +12,7 @@
 #include <oatpp/core/macro/component.hpp>
 #include <oatpp/web/server/api/ApiController.hpp>
 
-namespace NfoEditor {
+namespace Lunacd::NfoEditor {
 #include OATPP_CODEGEN_BEGIN(ApiController)
 
 class Controller : public oatpp::web::server::api::ApiController {

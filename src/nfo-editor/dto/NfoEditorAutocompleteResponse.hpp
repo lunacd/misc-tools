@@ -3,7 +3,7 @@
 #include <oatpp/core/Types.hpp>
 #include <oatpp/core/macro/codegen.hpp>
 
-namespace NfoEditor {
+namespace Lunacd::NfoEditor {
 #include OATPP_CODEGEN_BEGIN(DTO)
 
 /**

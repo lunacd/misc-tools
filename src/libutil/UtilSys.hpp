@@ -3,7 +3,7 @@
 #include <filesystem>
 #include <string>
 
-namespace Util::Sys {
+namespace Lunacd::Util::Sys {
 std::string getEnv(const std::string &name);
 
 std::filesystem::path getProgramDataDir(std::string_view programName);

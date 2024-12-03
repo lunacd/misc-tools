@@ -3,7 +3,7 @@
 #include <string>
 #include <vector>
 
-namespace NfoEditor {
+namespace Lunacd::NfoEditor {
 class Xml {
 public:
   Xml(std::string title, std::string studio, std::vector<std::string> actors,

@@ -1,8 +1,10 @@
 #pragma once
 
 #include <string>
+#include <vector>
 
-namespace Util::Str {
+namespace Lunacd::Util::Str {
 std::string_view trim(std::string_view input);
 std::string toLower(std::string_view input);
-} // namespace Util::Str
+std::vector<std::string> split(std::string_view input);
+} // namespace Lunacd::Util::Str

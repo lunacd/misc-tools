@@ -9,7 +9,7 @@
 #include <marisa/keyset.h>
 #include <marisa/trie.h>
 
-namespace NfoEditor {
+namespace Lunacd::NfoEditor {
 class Autocomplete {
 public:
   void registerCompletionSource(const std::string &completionSource);

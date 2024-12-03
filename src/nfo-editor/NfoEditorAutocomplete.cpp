@@ -13,7 +13,7 @@
 #include <marisa/keyset.h>
 #include <marisa/trie.h>
 
-namespace NfoEditor {
+namespace Lunacd::NfoEditor {
 namespace {
 std::filesystem::path
 getCompletionFilePath(const std::string &completionSource) {
