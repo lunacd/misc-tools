@@ -10,3 +10,6 @@ if (CMAKE_C_COMPILER_ID STREQUAL "MSVC")
 endif ()
 
 add_subdirectory(src)
+
+include(CTest)
+add_subdirectory(tests)

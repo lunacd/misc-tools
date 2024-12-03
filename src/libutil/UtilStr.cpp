@@ -1,6 +1,7 @@
 #include <UtilStr.hpp>
 
 #include <algorithm>
+#include <cstddef>
 #include <string>
 #include <string_view>
 
@@ -30,10 +31,14 @@ std::string toLower(std::string_view input) {
 
 std::vector<std::string> split(std::string_view input, char delim) {
   std::vector<std::string> result;
+  size_t current_delim = 0;
   size_t start = 0;
   size_t next = input.find(delim, start);
-  while (start != std::string_view::npos) {
-    result.emplace_back(input.substr(start, next));
+  while (current_delim != std::string_view::npos) {
+    result.emplace_back(input.substr(start, next - start));
+    current_delim = next;
+    start = current_delim + 1;
+    next = input.find(delim, start + 1);
   }
   return result;
 }
