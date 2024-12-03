@@ -1,7 +1,6 @@
 #include <UtilStr.hpp>
 
 #include <algorithm>
-#include <cstddef>
 #include <string>
 #include <string_view>
 
@@ -35,12 +34,13 @@ std::vector<std::string> split(std::string_view input, char delim) {
   size_t start = 0;
   size_t next = input.find(delim, start);
   while (current_delim != std::string_view::npos) {
-    if (start < next) {
-      result.emplace_back(input.substr(start, next - start));
+    const auto segment = input.substr(start, next - start);
+    if (segment.size() > 0) {
+      result.emplace_back(segment);
     }
     current_delim = next;
     start = current_delim + 1;
-    next = input.find(delim, start + 1);
+    next = input.find(delim, start);
   }
   return result;
 }

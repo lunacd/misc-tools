@@ -22,7 +22,18 @@ TEST(UtilStr, split) {
 
 TEST(UtilStr, splitEmptySegments) {
   // GIVEN
-  std::string input = "///a////b/c///";
+  std::string input = "a//////b//////c";
+
+  // WHEN
+  std::vector<std::string> result = split(input, '/');
+
+  // THEN
+  ASSERT_THAT(result, ElementsAre("a", "b", "c"));
+}
+
+TEST(UtilStr, splitLeadingAndTrailing) {
+  // GIVEN
+  std::string input = "//a/b/c//";
 
   // WHEN
   std::vector<std::string> result = split(input, '/');
