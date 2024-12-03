@@ -1,5 +1,6 @@
 add_executable(util_tests
     UtilStr.t.cpp
+    UtilFilesystem.t.cpp
 )
 
 find_package(GTest REQUIRED)

@@ -47,7 +47,7 @@ export default function NfoEditorClient() {
         onClick={() => {
           const fileSegments = fileRef.current!.value.split("\\");
           const filename = fileSegments[fileSegments.length - 1];
-          fetch("http://localhost:8000/nfoEditor/saveToNfo", {
+          fetch("/nfoEditor/saveToNfo", {
             method: "POST",
             body: JSON.stringify({
               title: titleRef.current!.value,

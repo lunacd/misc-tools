@@ -35,7 +35,7 @@ export const SuggestionInput = forwardRef<
     function (str: string) {
       if (str.length >= 2) {
         fetch(
-          `http://localhost:8000/nfoEditor/complete?source=${encodeURIComponent(props.completionSource)}&str=${encodeURIComponent(str)}`,
+          `/nfoEditor/complete?source=${encodeURIComponent(props.completionSource)}&str=${encodeURIComponent(str)}`,
         )
           .then((res) => res.json())
           .then((json) => {

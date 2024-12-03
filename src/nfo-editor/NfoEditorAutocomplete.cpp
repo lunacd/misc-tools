@@ -2,6 +2,7 @@
 
 #include <filesystem>
 #include <fstream>
+#include <oatpp/core/base/Environment.hpp>
 #include <unordered_map>
 #include <unordered_set>
 
@@ -123,10 +124,15 @@ Autocomplete::buildCompletionData(const std::string &completionSource) {
   // Check $XDG_DATA_HOME/nfo-editor/autocomplete/<source>.txt for completions
   const auto completionFilePath = getCompletionFilePath(completionSource);
   if (!std::filesystem::exists(completionFilePath)) {
+    OATPP_LOGI("NfoEditor",
+               "Completion source for %s not found. Building an empty one.",
+               completionSource.c_str());
     completionData->trie.build(completionData->keyset);
     return completionData;
   }
 
+  OATPP_LOGI("NfoEditor", "Loading completion source %s from disk.",
+             completionSource.c_str());
   std::ifstream completionFile{completionFilePath};
   std::string line;
   while (std::getline(completionFile, line)) {
@@ -148,4 +154,4 @@ Autocomplete::buildCompletionData(const std::string &completionSource) {
 
   return completionData;
 }
-} // namespace LunacdQml
+} // namespace Lunacd::NfoEditor

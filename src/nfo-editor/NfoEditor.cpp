@@ -2,6 +2,7 @@
 #include <NfoEditorStaticController.hpp>
 #include <UtilOat.hpp>
 
+#include <filesystem>
 #include <memory>
 
 #include <oatpp/network/Server.hpp>
@@ -19,7 +20,8 @@ void runServer() {
 
   /* Routes */
   router->addController(std::make_shared<NfoEditor::Controller>());
-  router->addController(std::make_shared<NfoEditor::StaticController>());
+  router->addController(std::make_shared<NfoEditor::StaticController>(
+      std::filesystem::current_path() / "ui"));
 
   OATPP_COMPONENT(std::shared_ptr<oatpp::network::ConnectionHandler>,
                   connectionHandler);

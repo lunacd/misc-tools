@@ -20,7 +20,6 @@ public:
   Controller(OATPP_COMPONENT(std::shared_ptr<ObjectMapper>, objectMapper))
       : oatpp::web::server::api::ApiController(objectMapper) {}
 
-  ADD_CORS(complete, "*")
   ENDPOINT("GET", "/nfoEditor/complete", complete, QUERY(String, source),
            QUERY(String, str)) {
     auto completer = m_autocomplete.getCompleter(source);
@@ -33,10 +32,8 @@ public:
     return createDtoResponse(Status::CODE_200, dto);
   }
 
-  ADD_CORS(saveToNfo, "*")
   ENDPOINT("POST", "/nfoEditor/saveToNfo", saveToNfo,
            BODY_DTO(Object<NfoEditorSaveToNfoRequest>, dto)) {
-    OATPP_LOGI("saveToNfo", "Saving");
     // Save autocompletion data
     auto completer = m_autocomplete.getCompleter("studio");
     completer.addCandidate(dto->studio);
@@ -51,7 +48,6 @@ public:
     m_autocomplete.exportCompletionData();
 
     // Save nfo to file
-    OATPP_LOGI("saveToNfo", "Exporting to file");
     const Xml data{
         dto->title, dto->studio,
         Util::Oat::oatppVectorToStdVector<std::string, oatpp::String>(
