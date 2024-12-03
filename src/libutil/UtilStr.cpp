@@ -35,7 +35,9 @@ std::vector<std::string> split(std::string_view input, char delim) {
   size_t start = 0;
   size_t next = input.find(delim, start);
   while (current_delim != std::string_view::npos) {
-    result.emplace_back(input.substr(start, next - start));
+    if (start < next) {
+      result.emplace_back(input.substr(start, next - start));
+    }
     current_delim = next;
     start = current_delim + 1;
     next = input.find(delim, start + 1);
