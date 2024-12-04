@@ -20,25 +20,25 @@ export default function NfoEditorClient() {
 
   return (
     <div className="m-8 flex w-96 flex-col gap-4">
-      <div className="gap-1.5">
+      <div className="space-y-1.5">
         <Label>Title</Label>
         <Input ref={titleRef} />
       </div>
-      <div className="gap-1.5">
+      <div className="space-y-1.5">
         <Label>Studio</Label>
         <SuggestionInput completionSource="studio" ref={studioRef} />
       </div>
 
-      <div className="gap-1.5">
+      <div className="space-y-1.5">
         <Label>Actors</Label>
         <ListInput className="mt-2" completionSource="actors" ref={actorRef} />
       </div>
-      <div className="gap-1.5">
+      <div className="space-y-1.5">
         <Label>Tags</Label>
         <ListInput className="mt-2" completionSource="tags" ref={tagRef} />
       </div>
 
-      <div className="gap-1.5">
+      <div className="space-y-1.5">
         <Label>Media File</Label>
         <Input type="file" ref={fileRef} />
       </div>
