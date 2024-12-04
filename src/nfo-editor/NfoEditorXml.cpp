@@ -1,12 +1,12 @@
 #include <NfoEditorXml.hpp>
 
-#include <filesystem>
+#include <sstream>
 
 #include <fmt/format.h>
 #include <pugixml.hpp>
 
 namespace Lunacd::NfoEditor {
-void Xml::saveToFile(const std::string &filename) const {
+std::string Xml::exportToStr() const {
   pugi::xml_document doc;
   pugi::xml_node root = doc.append_child("movie");
 
@@ -27,14 +27,8 @@ void Xml::saveToFile(const std::string &filename) const {
     tagNode.append_child(pugi::node_pcdata).set_value(tag.c_str());
   }
 
-  // If the given path has no extension, give it .nfo extension
-  // If the given path has another extension, replace it with .nfo
-  // This is useful for generating nfo files for another existing file.
-  auto pathToSave = std::filesystem::path() / filename;
-  pathToSave.replace_extension("nfo");
-
-  if (!doc.save_file(pathToSave.c_str())) {
-    throw std::runtime_error("Could not save file");
-  }
+  std::stringstream ss;
+  doc.save(ss);
+  return ss.str();
 }
-} // namespace NfoEditor
+} // namespace Lunacd::NfoEditor

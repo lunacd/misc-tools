@@ -9,15 +9,11 @@ namespace Lunacd::NfoEditor {
 /**
  * Message Data-Transfer-Object
  */
-class NfoEditorSaveToNfoRequest : public oatpp::DTO {
+class NfoEditorSaveToNfoResponse : public oatpp::DTO {
 
-  DTO_INIT(NfoEditorSaveToNfoRequest, DTO)
+  DTO_INIT(NfoEditorSaveToNfoResponse, DTO)
 
-  DTO_FIELD(String, filename);
-  DTO_FIELD(String, title);
-  DTO_FIELD(String, studio);
-  DTO_FIELD(Vector<String>, actors);
-  DTO_FIELD(Vector<String>, tags);
+  DTO_FIELD(Int32, id);
 };
 
 #include OATPP_CODEGEN_END(DTO)

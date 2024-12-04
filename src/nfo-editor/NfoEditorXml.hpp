@@ -1,21 +1,27 @@
 #pragma once
 
+#include <filesystem>
 #include <string>
 #include <vector>
 
 namespace Lunacd::NfoEditor {
 class Xml {
 public:
-  Xml(std::string title, std::string studio, std::vector<std::string> actors,
-      std::vector<std::string> tags)
-      : title(std::move(title)), studio(std::move(studio)),
+  Xml(std::string originalFilename, std::string title, std::string studio,
+      std::vector<std::string> actors, std::vector<std::string> tags)
+      : filename(std::filesystem::path{originalFilename}
+                     .replace_extension("nfo")
+                     .filename()
+                     .string()),
+        title(std::move(title)), studio(std::move(studio)),
         actors(std::move(actors)), tags(std::move(tags)) {}
 
+  std::string filename;
   std::string title;
   std::string studio;
   std::vector<std::string> actors{};
   std::vector<std::string> tags{};
 
-  void saveToFile(const std::string &filename) const;
+  std::string exportToStr() const;
 };
-} // namespace NfoEditor
+} // namespace Lunacd::NfoEditor

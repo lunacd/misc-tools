@@ -1,12 +1,19 @@
 #pragma once
 
 #include <NfoEditorAutocomplete.hpp>
+#include <NfoEditorExpiringMap.hpp>
 #include <NfoEditorXml.hpp>
 #include <UtilOat.hpp>
-#include <cmath>
 #include <dto/NfoEditorAutocompleteResponse.hpp>
 #include <dto/NfoEditorSaveToNfoRequest.hpp>
+#include <dto/NfoEditorSaveToNfoResponse.hpp>
 
+#include <cmath>
+#include <cstdlib>
+#include <mutex>
+#include <string>
+
+#include <fmt/format.h>
 #include <oatpp/core/Types.hpp>
 #include <oatpp/core/macro/codegen.hpp>
 #include <oatpp/core/macro/component.hpp>
@@ -22,6 +29,8 @@ public:
 
   ENDPOINT("GET", "/nfoEditor/complete", complete, QUERY(String, source),
            QUERY(String, str)) {
+    std::lock_guard<std::mutex> lock{m_autocompleteLock};
+
     auto completer = m_autocomplete.getCompleter(source);
     auto completions = completer.complete(str);
     auto dto = NfoEditorAutocompleteResponse::createShared();
@@ -34,6 +43,8 @@ public:
 
   ENDPOINT("POST", "/nfoEditor/saveToNfo", saveToNfo,
            BODY_DTO(Object<NfoEditorSaveToNfoRequest>, dto)) {
+    std::lock_guard<std::mutex> lock{m_autocompleteLock};
+
     // Save autocompletion data
     auto completer = m_autocomplete.getCompleter("studio");
     completer.addCandidate(dto->studio);
@@ -48,20 +59,44 @@ public:
     m_autocomplete.exportCompletionData();
 
     // Save nfo to file
+    std::lock_guard<std::mutex> xmlLock{m_xmlCacheLock};
     const Xml data{
-        dto->title, dto->studio,
+        dto->filename, dto->title, dto->studio,
         Util::Oat::oatppVectorToStdVector<std::string, oatpp::String>(
             dto->actors),
         Util::Oat::oatppVectorToStdVector<std::string, oatpp::String>(
             dto->tags)};
+    const int id = std::rand();
+    m_xmlCache.emplace(id, data);
 
-    data.saveToFile(dto->filename);
-    return createResponse(Status::CODE_200, "");
+    auto dtoResponse = NfoEditorSaveToNfoResponse::createShared();
+    dtoResponse->id = id;
+
+    return createDtoResponse(Status::CODE_200, dtoResponse);
+  }
+
+  ENDPOINT("GET", "/nfoEditor/getNfo", getNfo, QUERY(Int32, id)) {
+    std::lock_guard<std::mutex> lock{m_xmlCacheLock};
+    const auto it = m_xmlCache.find(id);
+    if (it == m_xmlCache.end()) {
+      return createResponse(Status::CODE_404,
+                            "No data associated with the given ID");
+    }
+    std::string content = it->second.exportToStr();
+    auto response = createResponse(Status::CODE_200, content);
+    response->putHeader(
+        "Content-Disposition",
+        fmt::format("attachment; filename=\"{}\"", it->second.filename));
+    return response;
   }
 
 private:
   Autocomplete m_autocomplete;
+  std::mutex m_autocompleteLock;
+
+  ExpiringMap<int, Xml, 600> m_xmlCache;
+  std::mutex m_xmlCacheLock;
 };
 
 #include OATPP_CODEGEN_END(ApiController)
-} // namespace NfoEditor
+} // namespace Lunacd::NfoEditor

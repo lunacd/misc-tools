@@ -16,6 +16,7 @@ export default function NfoEditorClient() {
   const actorRef = useRef<ListInputHandle>(null);
   const tagRef = useRef<ListInputHandle>(null);
   const fileRef = useRef<HTMLInputElement>(null);
+  const iframeRef = useRef<HTMLIFrameElement>(null);
 
   return (
     <div className="m-8 flex w-96 flex-col gap-4">
@@ -44,10 +45,10 @@ export default function NfoEditorClient() {
 
       <Button
         className="mt-2"
-        onClick={() => {
+        onClick={async () => {
           const fileSegments = fileRef.current!.value.split("\\");
           const filename = fileSegments[fileSegments.length - 1];
-          fetch("/nfoEditor/saveToNfo", {
+          const res = await fetch("/nfoEditor/saveToNfo", {
             method: "POST",
             body: JSON.stringify({
               title: titleRef.current!.value,
@@ -56,17 +57,19 @@ export default function NfoEditorClient() {
               actors: actorRef.current!.getValues(),
               filename: filename,
             }),
-          }).then(() => {
-            titleRef.current!.value = "";
-            studioRef.current!.clear();
-            actorRef.current!.clear();
-            tagRef.current!.clear();
-            fileRef.current!.value = "";
           });
+          const resJson = await res.json();
+          iframeRef.current!.src = `/nfoEditor/getNfo?id=${encodeURIComponent(resJson.id)}`;
+          titleRef.current!.value = "";
+          studioRef.current!.clear();
+          actorRef.current!.clear();
+          tagRef.current!.clear();
+          fileRef.current!.value = "";
         }}
       >
         Create
       </Button>
+      <iframe className="hidden" ref={iframeRef}></iframe>
     </div>
   );
 }
