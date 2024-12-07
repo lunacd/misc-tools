@@ -1,8 +1,8 @@
 #pragma once
 
 #include <NfoEditorAutocomplete.hpp>
-#include <NfoEditorExpiringMap.hpp>
 #include <NfoEditorXml.hpp>
+#include <UtilExpiringResource.hpp>
 #include <UtilOat.hpp>
 #include <dto/NfoEditorAutocompleteResponse.hpp>
 #include <dto/NfoEditorSaveToNfoRequest.hpp>
@@ -94,7 +94,7 @@ private:
   Autocomplete m_autocomplete;
   std::mutex m_autocompleteLock;
 
-  ExpiringMap<int, Xml, 600> m_xmlCache;
+  Util::ExpiringResource::ExpiringResource<int, Xml, 600> m_xmlCache;
   std::mutex m_xmlCacheLock;
 };
 

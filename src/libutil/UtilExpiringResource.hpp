@@ -3,8 +3,9 @@
 #include <chrono>
 #include <unordered_map>
 
-namespace Lunacd::NfoEditor {
-template <typename K, typename V, size_t maxDurationSeconds> class ExpiringMap {
+namespace Lunacd::Util::ExpiringResource {
+template <typename K, typename V, size_t maxDurationSeconds>
+class ExpiringResource {
 public:
   using item_iterator = std::unordered_map<K, V>::iterator;
 
@@ -48,4 +49,4 @@ private:
     m_numOperations = 0;
   }
 };
-} // namespace Lunacd::NfoEditor
+} // namespace Lunacd::Util::ExpiringResource

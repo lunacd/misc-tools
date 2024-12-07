@@ -3,6 +3,7 @@ add_library(util
     UtilSys.cpp
     UtilOat.cpp
     UtilFilesystem.cpp
+    UtilExpiringResource.cpp
 )
 
 target_sources(util PUBLIC FILE_SET HEADERS FILES
@@ -10,6 +11,7 @@ target_sources(util PUBLIC FILE_SET HEADERS FILES
     UtilSys.hpp
     UtilOat.hpp
     UtilFilesystem.hpp
+    UtilExpiringResource.hpp
 )
 
 target_include_directories(util PRIVATE .)
