@@ -5,7 +5,6 @@ find_package(ImageMagick REQUIRED COMPONENTS Magick++)
 
 # Projects
 add_subdirectory(libutil)
-# add_subdirectory(liblunacd-qml)
 add_subdirectory(scrape-autocomplete)
 add_subdirectory(nfo-editor)
-# add_subdirectory(image-transformer)
+add_subdirectory(image-transformer)
