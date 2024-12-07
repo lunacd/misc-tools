@@ -16,3 +16,6 @@ target_include_directories(util PRIVATE .)
 
 find_package(oatpp REQUIRED)
 target_link_libraries(util PUBLIC oatpp::oatpp)
+
+find_package(fmt REQUIRED)
+target_link_libraries(util PRIVATE fmt::fmt)
