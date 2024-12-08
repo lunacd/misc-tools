@@ -12,13 +12,16 @@
 #include <cstdlib>
 #include <mutex>
 #include <string>
+#include <unordered_map>
 
+#include <boost/uuid/uuid.hpp>
+#include <boost/uuid/uuid_generators.hpp>
+#include <boost/uuid/uuid_io.hpp>
 #include <fmt/format.h>
 #include <oatpp/core/Types.hpp>
 #include <oatpp/core/macro/codegen.hpp>
 #include <oatpp/core/macro/component.hpp>
 #include <oatpp/web/server/api/ApiController.hpp>
-#include <unordered_map>
 
 namespace Lunacd::NfoEditor {
 #include OATPP_CODEGEN_BEGIN(ApiController)
@@ -27,7 +30,8 @@ class Controller : public oatpp::web::server::api::ApiController {
 public:
   Controller(OATPP_COMPONENT(std::shared_ptr<ObjectMapper>, objectMapper))
       : oatpp::web::server::api::ApiController(objectMapper),
-        m_xmlCacheExpiring{600, [this](int key) { m_xmlCache.erase(key); }} {}
+        m_xmlCacheExpiring{
+            600, [this](const std::string &key) { m_xmlCache.erase(key); }} {}
 
   ENDPOINT("GET", "/nfoEditor/complete", complete, QUERY(String, source),
            QUERY(String, str)) {
@@ -68,19 +72,24 @@ public:
             dto->actors),
         Util::Oat::oatppVectorToStdVector<std::string, oatpp::String>(
             dto->tags)};
-    const int id = std::rand();
-    m_xmlCache.emplace(id, data);
-    m_xmlCacheExpiring.insert(id);
+
+    std::string uuid;
+    {
+      std::lock_guard<std::mutex> uuidLock{m_uuidGeneratorLock};
+      uuid = to_string(m_uuidGenerator());
+    }
+    m_xmlCache.emplace(uuid, data);
+    m_xmlCacheExpiring.insert(uuid);
 
     auto dtoResponse = NfoEditorSaveToNfoResponse::createShared();
-    dtoResponse->id = id;
+    dtoResponse->uuid = uuid;
 
     return createDtoResponse(Status::CODE_200, dtoResponse);
   }
 
-  ENDPOINT("GET", "/nfoEditor/getNfo", getNfo, QUERY(Int32, id)) {
+  ENDPOINT("GET", "/nfoEditor/getNfo", getNfo, QUERY(String, uuid)) {
     std::lock_guard<std::mutex> lock{m_xmlCacheLock};
-    const auto it = m_xmlCache.find(id);
+    const auto it = m_xmlCache.find(uuid);
     if (it == m_xmlCache.end()) {
       return createResponse(Status::CODE_404,
                             "No data associated with the given ID");
@@ -97,9 +106,12 @@ private:
   Autocomplete m_autocomplete;
   std::mutex m_autocompleteLock;
 
-  Util::ExpiringResource::ExpiringResource<int> m_xmlCacheExpiring;
-  std::unordered_map<int, Xml> m_xmlCache;
+  Util::ExpiringResource::ExpiringResource<std::string> m_xmlCacheExpiring;
+  std::unordered_map<std::string, Xml> m_xmlCache;
   std::mutex m_xmlCacheLock;
+
+  boost::uuids::random_generator m_uuidGenerator;
+  std::mutex m_uuidGeneratorLock;
 };
 
 #include OATPP_CODEGEN_END(ApiController)

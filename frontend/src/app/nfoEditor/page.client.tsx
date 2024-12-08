@@ -59,7 +59,7 @@ export default function NfoEditorClient() {
             }),
           });
           const resJson = await res.json();
-          iframeRef.current!.src = `/nfoEditor/getNfo?id=${encodeURIComponent(resJson.id)}`;
+          iframeRef.current!.src = `/nfoEditor/getNfo?uuid=${encodeURIComponent(resJson.uuid)}`;
           titleRef.current!.value = "";
           studioRef.current!.clear();
           actorRef.current!.clear();

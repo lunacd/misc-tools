@@ -13,7 +13,7 @@ class NfoEditorSaveToNfoResponse : public oatpp::DTO {
 
   DTO_INIT(NfoEditorSaveToNfoResponse, DTO)
 
-  DTO_FIELD(Int32, id);
+  DTO_FIELD(String, uuid);
 };
 
 #include OATPP_CODEGEN_END(DTO)
