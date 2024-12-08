@@ -1,50 +1,63 @@
 #pragma once
 
 #include <chrono>
+#include <functional>
 #include <unordered_map>
 
 namespace Lunacd::Util::ExpiringResource {
-template <typename K, typename V, size_t maxDurationSeconds>
-class ExpiringResource {
+/**
+ * @brief This class helps manages resources that could expire. After a resource
+ * expires, the given cleanup callback is called with the expired key.
+ *
+ * @details It's not guaranteed when the callback will be called, only that it
+ * will eventually be called. In this current implementation, elements are
+ * checked for expiration when the container doubles in size. That is, when
+ * expiring resources are being managed by this class, expired resources are
+ * guaranteed to not overflow resources when the load factor is below 50%.
+ *
+ * @tparam K Key for the resources being managed
+ */
+template <typename K> class ExpiringResource {
 public:
-  using item_iterator = std::unordered_map<K, V>::iterator;
+  using cleanup_func_t = std::function<void(const K &key)>;
 
-  template <typename First, typename... Args>
-  std::pair<item_iterator, bool> emplace(First &&key, Args &&...args) {
+  ExpiringResource(size_t maxDurationSeconds, cleanup_func_t cleanupFunc)
+      : m_maxDurationSeconds{maxDurationSeconds}, m_cleanupFunc{cleanupFunc} {}
+
+  void insert(const K &key) {
+    // Add two, one to account for the added element, another to "mark" an
+    // existing element as needing to be checked.
+    m_numOperations += 2;
     prune();
     m_creationTime.emplace(key, std::chrono::steady_clock::now());
-    return m_map.emplace(key, args...);
   }
 
-  auto end() const { return m_map.end(); }
-
-  auto find(const K &key) {
-    prune();
-    return m_map.find(key);
+  void erase(const K &key) {
+    m_cleanupFunc(key);
+    m_creationTime.erase(key);
   }
 
 private:
   size_t m_numOperations = 0;
-  std::unordered_map<K, V> m_map;
+  size_t m_maxDurationSeconds = 600;
   std::unordered_map<K, std::chrono::time_point<std::chrono::steady_clock>>
       m_creationTime;
+  cleanup_func_t m_cleanupFunc;
 
   void prune() {
-    m_numOperations += 1;
-    if (m_numOperations <= m_map.size()) {
+    if (m_numOperations <= m_creationTime.size()) {
       return;
     }
-    const auto expiringThreshold = std::chrono::steady_clock::now() +
-                                   std::chrono::seconds{maxDurationSeconds};
-    auto item_it = m_map.begin();
-    auto time_it = m_creationTime.begin();
-    while (item_it != m_map.end() && time_it != m_creationTime.end()) {
-      if (time_it->second < expiringThreshold) {
-        time_it = m_creationTime.erase(time_it);
-        item_it = m_map.erase(item_it);
+    const auto expiringThreshold = std::chrono::steady_clock::now() -
+                                   std::chrono::seconds{m_maxDurationSeconds};
+    auto it = m_creationTime.begin();
+    while (it != m_creationTime.end()) {
+      if (it->second < expiringThreshold) {
+        m_cleanupFunc(it->first);
+        it = m_creationTime.erase(it);
+      } else {
+        ++it;
       }
-      ++time_it;
-      ++item_it;
     }
     m_numOperations = 0;
   }

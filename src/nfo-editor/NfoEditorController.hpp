@@ -18,6 +18,7 @@
 #include <oatpp/core/macro/codegen.hpp>
 #include <oatpp/core/macro/component.hpp>
 #include <oatpp/web/server/api/ApiController.hpp>
+#include <unordered_map>
 
 namespace Lunacd::NfoEditor {
 #include OATPP_CODEGEN_BEGIN(ApiController)
@@ -25,7 +26,8 @@ namespace Lunacd::NfoEditor {
 class Controller : public oatpp::web::server::api::ApiController {
 public:
   Controller(OATPP_COMPONENT(std::shared_ptr<ObjectMapper>, objectMapper))
-      : oatpp::web::server::api::ApiController(objectMapper) {}
+      : oatpp::web::server::api::ApiController(objectMapper),
+        m_xmlCacheExpiring{600, [this](int key) { m_xmlCache.erase(key); }} {}
 
   ENDPOINT("GET", "/nfoEditor/complete", complete, QUERY(String, source),
            QUERY(String, str)) {
@@ -68,6 +70,7 @@ public:
             dto->tags)};
     const int id = std::rand();
     m_xmlCache.emplace(id, data);
+    m_xmlCacheExpiring.insert(id);
 
     auto dtoResponse = NfoEditorSaveToNfoResponse::createShared();
     dtoResponse->id = id;
@@ -94,7 +97,8 @@ private:
   Autocomplete m_autocomplete;
   std::mutex m_autocompleteLock;
 
-  Util::ExpiringResource::ExpiringResource<int, Xml, 600> m_xmlCache;
+  Util::ExpiringResource::ExpiringResource<int> m_xmlCacheExpiring;
+  std::unordered_map<int, Xml> m_xmlCache;
   std::mutex m_xmlCacheLock;
 };
 
