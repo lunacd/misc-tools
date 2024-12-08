@@ -7,5 +7,11 @@ target_sources(image-transformer PRIVATE FILE_SET HEADERS FILES
 )
 
 target_link_libraries(image-transformer PRIVATE util)
+
+find_package(ImageMagick REQUIRED)
 target_link_libraries(image-transformer PRIVATE ImageMagick::Magick++)
+
+find_package(fmt REQUIRED)
 target_link_libraries(image-transformer PRIVATE fmt::fmt)
+
+find_package(Boost REQUIRED)
