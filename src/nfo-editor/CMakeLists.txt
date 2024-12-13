@@ -27,3 +27,4 @@ find_package(oatpp REQUIRED)
 target_link_libraries(nfo-editor PRIVATE oatpp::oatpp)
 
 find_package(Boost REQUIRED)
+target_include_directories(nfo-editor PRIVATE ${Boost_INCLUDE_DIRS})

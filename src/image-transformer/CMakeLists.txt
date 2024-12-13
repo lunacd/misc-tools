@@ -15,3 +15,4 @@ find_package(fmt REQUIRED)
 target_link_libraries(image-transformer PRIVATE fmt::fmt)
 
 find_package(Boost REQUIRED)
+target_include_directories(image-transformer PRIVATE ${Boost_INCLUDE_DIRS})
