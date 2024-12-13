@@ -59,7 +59,6 @@ private:
       create_directories(completionFilePath.parent_path());
     }
     std::ofstream outFile{completionFilePath};
-    std::cout << getCompletionFilePath(completionSource).string() << std::endl;
     for (const auto &item : data) {
       outFile << item << '\n';
     }

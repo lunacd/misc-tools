@@ -6,6 +6,7 @@
 #include <filesystem>
 #include <iterator>
 
+#include <memory>
 #include <oatpp/core/Types.hpp>
 #include <oatpp/core/macro/component.hpp>
 #include <oatpp/network/tcp/server/ConnectionProvider.hpp>
@@ -22,7 +23,7 @@ public:
   OATPP_CREATE_COMPONENT(
       std::shared_ptr<oatpp::network::ServerConnectionProvider>,
       serverConnectionProvider)
-  ([] {
+  ("serverConnectionProvider", [] {
     return oatpp::network::tcp::server::ConnectionProvider::createShared(
         {"localhost", 8000, oatpp::network::Address::IP_4});
   }());
