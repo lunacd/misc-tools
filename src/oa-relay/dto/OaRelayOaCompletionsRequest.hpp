@@ -8,10 +8,12 @@
 namespace Lunacd::OaRelay {
 #include OATPP_CODEGEN_BEGIN(DTO)
 
-class CompletionsRequest : public oatpp::DTO {
-  DTO_INIT(CompletionsRequest, DTO);
+class OaCompletionsRequest : public oatpp::DTO {
+  DTO_INIT(OaCompletionsRequest, DTO);
 
+  DTO_FIELD(String, model);
   DTO_FIELD(Vector<Object<CompletionsMessage>>, messages);
+  DTO_FIELD(Boolean, stream);
 };
 
 #include OATPP_CODEGEN_END(DTO)

@@ -6,8 +6,8 @@
 #include <UtilOat.hpp>
 #include <dto/OaRelayCompletionsMessage.hpp>
 #include <dto/OaRelayCompletionsRequest.hpp>
+#include <dto/OaRelayOaCompletionsRequest.hpp>
 
-#include <chrono>
 #include <cmath>
 #include <condition_variable>
 #include <cstddef>
@@ -15,8 +15,8 @@
 #include <iostream>
 #include <memory>
 #include <mutex>
+#include <oatpp/web/protocol/http/Http.hpp>
 #include <stdexcept>
-#include <thread>
 
 #include <boost/uuid/uuid.hpp>
 #include <boost/uuid/uuid_generators.hpp>
@@ -114,34 +114,42 @@ public:
     m_apiKey = std::format("Bearer {}", key);
   }
 
-  ENDPOINT("GET", "/oaRelay/completions", completions) {
-    const auto dto = CompletionsRequest::createShared();
-    dto->model = "gpt-4o-mini";
-    oatpp::Vector<oatpp::Object<CompletionsMessage>> messages({});
-    const auto systemMessage = CompletionsMessage::createShared();
-    systemMessage->role = "system";
-    systemMessage->content = "You are a helpful assistant.";
-    messages->emplace_back(systemMessage);
+  ENDPOINT("POST", "/oaRelay/completions", completions,
+           BODY_DTO(Object<CompletionsRequest>, dto)) {
+    // Request to OpenAI API
+    const auto oaDto = OaCompletionsRequest::createShared();
+    oaDto->model = "gpt-4o-mini";
+    oaDto->messages = dto->messages;
+    oaDto->stream = true;
+    const auto apiRes = m_apiClient->getCompletions(m_apiKey, oaDto);
+    const auto responseType = apiRes->getHeader(Header::CONTENT_TYPE);
 
-    const auto myMessage = CompletionsMessage::createShared();
-    myMessage->role = "user";
-    myMessage->content = "Hello!";
+    // Forward response
+    if (responseType != "text/event-stream") {
+      // Not a stream, then just forward the response
+      const auto body = apiRes->readBodyToString();
+      const auto statusCode = apiRes->getStatusCode();
+      const auto statusDescription = apiRes->getStatusDescription();
+      const auto status = oatpp::web::protocol::http::Status{
+          statusCode, statusDescription->c_str()};
+      const auto res = createResponse(status, body);
+      res->putHeader(Header::CONTENT_TYPE,
+                     apiRes->getHeader(Header::CONTENT_TYPE));
+      return res;
+    } else {
+      // This is an event stream, stream it
+      const auto sseScanner = std::make_shared<SseScanner>();
+      apiRes->transferBody(std::make_shared<WriteCallback>(sseScanner));
 
-    dto->messages = messages;
-    dto->stream = true;
-    const auto apiRes = m_apiClient->getCompletions(m_apiKey, dto);
-    const auto sseScanner = std::make_shared<SseScanner>();
-    apiRes->transferBody(std::make_shared<WriteCallback>(sseScanner));
-
-    std::this_thread::sleep_for(std::chrono::seconds{5});
-
-    const auto body =
-        std::make_shared<oatpp::web::protocol::http::outgoing::StreamingBody>(
-            std::make_shared<ReadCallback>(sseScanner));
-    const auto res = std::make_shared<OutgoingResponse>(Status::CODE_200, body);
-    res->putHeader("Cache-Control", "no-store");
-    res->putHeader("Content-Type", "text/event-stream");
-    return res;
+      const auto body =
+          std::make_shared<oatpp::web::protocol::http::outgoing::StreamingBody>(
+              std::make_shared<ReadCallback>(sseScanner));
+      const auto res =
+          std::make_shared<OutgoingResponse>(Status::CODE_200, body);
+      res->putHeader("Cache-Control", "no-store");
+      res->putHeader("Content-Type", "text/event-stream");
+      return res;
+    }
   }
 
 private:

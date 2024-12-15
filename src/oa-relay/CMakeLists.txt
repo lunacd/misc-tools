@@ -13,6 +13,7 @@ target_sources(oa-relay PRIVATE FILE_SET HEADERS FILES
     OaRelaySseScanner.hpp
     dto/OaRelayCompletionsMessage.hpp
     dto/OaRelayCompletionsRequest.hpp
+    dto/OaRelayOaCompletionsRequest.hpp
 )
 
 find_package(oatpp REQUIRED)
