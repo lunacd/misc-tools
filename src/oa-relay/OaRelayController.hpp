@@ -12,10 +12,10 @@
 #include <condition_variable>
 #include <cstddef>
 #include <cstdlib>
-#include <iostream>
 #include <memory>
 #include <mutex>
 #include <oatpp/web/protocol/http/Http.hpp>
+#include <oatpp/web/protocol/http/incoming/Response.hpp>
 #include <stdexcept>
 
 #include <boost/uuid/uuid.hpp>
@@ -62,7 +62,6 @@ public:
       size_t bytesRead =
           std::min(static_cast<size_t>(count), m_remaining.size());
       m_remaining.copy(static_cast<char *>(buffer), bytesRead);
-      std::cout << "Sending " << m_remaining.substr(0, bytesRead);
       m_remaining.erase(0, bytesRead);
       return bytesRead;
     }
@@ -98,10 +97,29 @@ private:
   std::shared_ptr<SseScanner> m_sseScanner;
 };
 
+class ReadCoroutine : public oatpp::async::Coroutine<ReadCoroutine> {
+public:
+  ReadCoroutine(
+      std::shared_ptr<oatpp::web::protocol::http::incoming::Response> response,
+      std::shared_ptr<SseScanner> sseScanner)
+      : m_response(std::move(response)), m_sseScanner(std::move(sseScanner)) {}
+
+  Action act() override {
+    return m_response
+        ->transferBodyAsync(std::make_shared<WriteCallback>(m_sseScanner))
+        .next(finish());
+  }
+
+private:
+  std::shared_ptr<oatpp::web::protocol::http::incoming::Response> m_response;
+  std::shared_ptr<SseScanner> m_sseScanner;
+};
+
 #include OATPP_CODEGEN_BEGIN(ApiController)
 
 class Controller : public oatpp::web::server::api::ApiController {
 public:
+  typedef Controller __ControllerType;
   Controller(OATPP_COMPONENT(std::shared_ptr<ObjectMapper>, objectMapper),
              OATPP_COMPONENT(std::shared_ptr<ApiClient>, apiClient))
       : oatpp::web::server::api::ApiController(objectMapper),
@@ -114,48 +132,65 @@ public:
     m_apiKey = std::format("Bearer {}", key);
   }
 
-  ENDPOINT("POST", "/oaRelay/completions", completions,
-           BODY_DTO(Object<CompletionsRequest>, dto)) {
-    // Request to OpenAI API
-    const auto oaDto = OaCompletionsRequest::createShared();
-    oaDto->model = "gpt-4o-mini";
-    oaDto->messages = dto->messages;
-    oaDto->stream = true;
-    const auto apiRes = m_apiClient->getCompletions(m_apiKey, oaDto);
-    const auto responseType = apiRes->getHeader(Header::CONTENT_TYPE);
+  ENDPOINT_ASYNC("POST", "/oaRelay/completions", CompletionsAsync) {
+    ENDPOINT_ASYNC_INIT(CompletionsAsync);
+    OATPP_COMPONENT(std::shared_ptr<oatpp::async::Executor>, m_executor);
 
-    // Forward response
-    if (responseType != "text/event-stream") {
-      // Not a stream, then just forward the response
-      const auto body = apiRes->readBodyToString();
-      const auto statusCode = apiRes->getStatusCode();
-      const auto statusDescription = apiRes->getStatusDescription();
-      const auto status = oatpp::web::protocol::http::Status{
-          statusCode, statusDescription->c_str()};
-      const auto res = createResponse(status, body);
-      res->putHeader(Header::CONTENT_TYPE,
-                     apiRes->getHeader(Header::CONTENT_TYPE));
-      return res;
-    } else {
-      // This is an event stream, stream it
-      const auto sseScanner = std::make_shared<SseScanner>();
-      apiRes->transferBody(std::make_shared<WriteCallback>(sseScanner));
-
-      const auto body =
-          std::make_shared<oatpp::web::protocol::http::outgoing::StreamingBody>(
-              std::make_shared<ReadCallback>(sseScanner));
-      const auto res =
-          std::make_shared<OutgoingResponse>(Status::CODE_200, body);
-      res->putHeader("Cache-Control", "no-store");
-      res->putHeader("Content-Type", "text/event-stream");
-      return res;
+    Action act() override {
+      return request
+          ->readBodyToDtoAsync<oatpp::Object<CompletionsRequest>>(
+              controller->getDefaultObjectMapper())
+          .callbackTo(&CompletionsAsync::onBodyObtained);
     }
-  }
+
+    Action onBodyObtained(const oatpp::Object<CompletionsRequest> &dto) {
+      // Request to OpenAI API
+      const auto oaDto = OaCompletionsRequest::createShared();
+      oaDto->model = "gpt-4o-mini";
+      oaDto->messages = dto->messages;
+      oaDto->stream = true;
+      return controller->m_apiClient
+          ->getCompletionsAsync(controller->m_apiKey, oaDto)
+          .callbackTo(&CompletionsAsync::onResponseObtained);
+    }
+
+    Action onResponseObtained(const std::shared_ptr<IncomingResponse> &apiRes) {
+      const auto responseType = apiRes->getHeader(Header::CONTENT_TYPE);
+
+      // Forward response
+      if (!responseType->starts_with("text/event-stream")) {
+        // Not a stream, then just forward the response
+        const auto body = apiRes->readBodyToString();
+        const auto statusCode = apiRes->getStatusCode();
+        const auto statusDescription = apiRes->getStatusDescription();
+        const auto status = oatpp::web::protocol::http::Status{
+            statusCode, statusDescription->c_str()};
+        const auto res = controller->createResponse(status, body);
+        res->putHeader(Header::CONTENT_TYPE,
+                       apiRes->getHeader(Header::CONTENT_TYPE));
+        return _return(res);
+      } else {
+        // This is an event stream, stream it
+        const auto sseScanner = std::make_shared<SseScanner>();
+        m_executor->execute<ReadCoroutine>(apiRes, sseScanner);
+
+        const auto body = std::make_shared<
+            oatpp::web::protocol::http::outgoing::StreamingBody>(
+            std::make_shared<ReadCallback>(sseScanner));
+        const auto res =
+            std::make_shared<OutgoingResponse>(Status::CODE_200, body);
+        res->putHeader("Cache-Control", "no-store");
+        res->putHeader("Content-Type", "text/event-stream");
+        return _return(res);
+      }
+    }
+  };
 
 private:
-  std::shared_ptr<oatpp::web::client::RequestExecutor> m_requestExecutor;
   std::shared_ptr<ApiClient> m_apiClient;
   std::string m_apiKey;
+
+  friend class CompletionsAsync;
 };
 
 #include OATPP_CODEGEN_END(ApiController)

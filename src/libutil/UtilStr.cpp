@@ -44,4 +44,8 @@ std::vector<std::string> split(std::string_view input, char delim) {
   }
   return result;
 }
+
+bool startsWith(std::string_view str, std::string_view prefix) {
+  return str.rfind(prefix, 0);
+}
 } // namespace Lunacd::Util::Str

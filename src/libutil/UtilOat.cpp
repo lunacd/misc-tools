@@ -3,7 +3,7 @@
 #include <fmt/format.h>
 
 namespace Lunacd::Util::Oat {
-std::string StaticController::getFile(const std::filesystem::path &filePath) {
+std::string StaticControllerBase::getFile(const std::filesystem::path &filePath) {
   if (!std::filesystem::is_regular_file(filePath)) {
     throw std::runtime_error(
         fmt::format("{} does not exist", filePath.string()));
@@ -24,7 +24,7 @@ std::string StaticController::getFile(const std::filesystem::path &filePath) {
   return buffer;
 }
 
-std::string StaticController::extToMIME(const std::string &ext) {
+std::string StaticControllerBase::extToMIME(const std::string &ext) {
   if (ext == ".html") {
     return "text/html";
   }
