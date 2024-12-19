@@ -1,6 +1,6 @@
 #pragma once
 
-#include <dto/OaRelayOaCompletionsRequest.hpp>
+#include <OaRelayDTOs.hpp>
 
 #include <oatpp/core/macro/codegen.hpp>
 #include <oatpp/web/client/ApiClient.hpp>
@@ -12,9 +12,9 @@ class ApiClient : public oatpp::web::client::ApiClient {
 
   API_CLIENT_INIT(ApiClient)
 
-  API_CALL("POST", "/v1/chat/completions", getCompletions,
-           HEADER(String, authorization, "Authorization"),
-           BODY_DTO(Object<OaCompletionsRequest>, body))
+  API_CALL_ASYNC("POST", "/v1/chat/completions", getCompletionsAsync,
+                 HEADER(String, authorization, "Authorization"),
+                 BODY_DTO(Object<OaCompletionsRequest>, body))
 };
 #include OATPP_CODEGEN_END(ApiClient)
 

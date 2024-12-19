@@ -1,2 +1,5 @@
 # Built ui artifacts
 /ui/
+
+# Sqlite database file
+*.db
