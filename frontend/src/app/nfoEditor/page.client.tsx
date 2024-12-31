@@ -31,11 +31,11 @@ export default function NfoEditorClient() {
 
       <div className="space-y-1.5">
         <Label>Actors</Label>
-        <ListInput className="mt-2" completionSource="actors" ref={actorRef} />
+        <ListInput className="mt-2" completionSource="actor" ref={actorRef} />
       </div>
       <div className="space-y-1.5">
         <Label>Tags</Label>
-        <ListInput className="mt-2" completionSource="tags" ref={tagRef} />
+        <ListInput className="mt-2" completionSource="tag" ref={tagRef} />
       </div>
 
       <div className="space-y-1.5">
