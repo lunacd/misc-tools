@@ -14,6 +14,7 @@
 #include <string>
 #include <unordered_map>
 
+#include <boost/url.hpp>
 #include <boost/uuid/uuid.hpp>
 #include <boost/uuid/uuid_generators.hpp>
 #include <boost/uuid/uuid_io.hpp>
@@ -35,10 +36,12 @@ public:
 
   ENDPOINT("GET", "/nfoEditor/complete", complete, QUERY(String, source),
            QUERY(String, str)) {
+    const boost::urls::decode_view decodedStr(std::string{str});
     std::lock_guard<std::mutex> lock{m_autocompleteLock};
 
     auto completer = m_autocomplete.getCompleter(source);
-    auto completions = completer.complete(str);
+    auto completions =
+        completer.complete(std::string{decodedStr.begin(), decodedStr.end()});
     auto dto = NfoEditorAutocompleteResponse::createShared();
     dto->completions = oatpp::Vector<oatpp::String>::createShared();
     for (auto &completion : completions) {
