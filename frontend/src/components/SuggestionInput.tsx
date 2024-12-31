@@ -77,7 +77,7 @@ export const SuggestionInput = forwardRef<
             e.preventDefault();
           } else if (e.key === "ArrowDown") {
             setSelected((orig) => {
-              return Math.min(orig + 1, completions.length);
+              return Math.min(orig + 1, completions.length - 1);
             });
             e.preventDefault();
           } else if (e.key === "Enter") {
