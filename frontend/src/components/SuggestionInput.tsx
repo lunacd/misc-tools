@@ -60,6 +60,17 @@ export const SuggestionInput = forwardRef<
     };
   });
 
+  const acceptSuggestion = useCallback(
+    (selectedIndex: number) => {
+      if (selectedIndex >= 0 && selectedIndex < completions.length) {
+        inputRef.current!.value = completions[selectedIndex];
+        setCompletions([]);
+        setSelected(0);
+      }
+    },
+    [inputRef, completions],
+  );
+
   return (
     <div className={`${props.className ?? ""}`}>
       <Input
@@ -81,10 +92,7 @@ export const SuggestionInput = forwardRef<
             });
             e.preventDefault();
           } else if (e.key === "Enter") {
-            if (selected >= 0 && selected < completions.length) {
-              inputRef.current!.value = completions[selected];
-              setCompletions([]);
-            }
+            acceptSuggestion(selected);
           }
           if (props.onKeydown) {
             props.onKeydown(e);
@@ -98,12 +106,15 @@ export const SuggestionInput = forwardRef<
             {completions.map((completion, index) => (
               <div
                 className={classNames(
-                  "select-none rounded-sm px-2 py-1.5 hover:bg-accent focus:bg-accent",
+                  "cursor-pointer select-none rounded-sm px-2 py-1.5 hover:bg-accent focus:bg-accent",
                   {
                     "bg-accent": index === selected,
                   },
                 )}
                 key={index}
+                onClick={() => {
+                  acceptSuggestion(index);
+                }}
               >
                 {completion}
               </div>
