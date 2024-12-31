@@ -57,11 +57,11 @@ public:
     // Save autocompletion data
     auto completer = m_autocomplete.getCompleter("studio");
     completer.addCandidate(dto->studio);
-    completer = m_autocomplete.getCompleter("actors");
+    completer = m_autocomplete.getCompleter("actor");
     for (const auto &actor : *dto->actors) {
       completer.addCandidate(actor);
     }
-    completer = m_autocomplete.getCompleter("tags");
+    completer = m_autocomplete.getCompleter("tag");
     for (const auto &tag : *dto->tags) {
       completer.addCandidate(tag);
     }
