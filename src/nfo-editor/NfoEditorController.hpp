@@ -1,5 +1,6 @@
 #pragma once
 
+#include "UtilStr.hpp"
 #include <NfoEditorAutocomplete.hpp>
 #include <NfoEditorXml.hpp>
 #include <UtilExpiringResource.hpp>
@@ -40,8 +41,8 @@ public:
     std::lock_guard<std::mutex> lock{m_autocompleteLock};
 
     auto completer = m_autocomplete.getCompleter(source);
-    auto completions =
-        completer.complete(std::string{decodedStr.begin(), decodedStr.end()});
+    auto completions = completer.complete(
+        Util::Str::toLower(std::string{decodedStr.begin(), decodedStr.end()}));
     auto dto = NfoEditorAutocompleteResponse::createShared();
     dto->completions = oatpp::Vector<oatpp::String>::createShared();
     for (auto &completion : completions) {
