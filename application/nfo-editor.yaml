@@ -1,0 +1,34 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nfo-editor
+spec:
+  selector:
+    matchLabels:
+      app: nfo-editor
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: nfo-editor
+    spec:
+      containers:
+      - name: nfo-editor
+        image: haowenl/nfo-editor:0.0.1
+        ports:
+        - containerPort: 8000
+          protocol: TCP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nfo-editor
+spec:
+  type: NodePort
+  selector:
+    app: nfo-editor
+  ports:
+    - protocol: TCP
+      port: 8000
+      targetPort: 8000
+      nodePort: 30100
