@@ -27,7 +27,7 @@ public:
       serverConnectionProvider)
   ("serverConnectionProvider", [] {
     return oatpp::network::tcp::server::ConnectionProvider::createShared(
-        {"localhost", 8000, oatpp::network::Address::IP_4});
+        {"0.0.0.0", 8000, oatpp::network::Address::IP_4});
   }());
 
   /**
@@ -68,7 +68,7 @@ public:
       serverConnectionProvider)
   ("serverConnectionProvider", [] {
     return oatpp::network::tcp::server::ConnectionProvider::createShared(
-        {"localhost", 8000, oatpp::network::Address::IP_4});
+        {"0.0.0.0", 8000, oatpp::network::Address::IP_4});
   }());
 
   /**
