@@ -5,6 +5,7 @@
 #include <oatpp/orm/DbClient.hpp>
 #include <oatpp/orm/SchemaMigration.hpp>
 
+namespace Lunacd::OaRelay {
 #include OATPP_CODEGEN_BEGIN(DbClient)
 
 class DatabaseClient : public oatpp::orm::DbClient {
@@ -16,9 +17,10 @@ public:
         "INSERT INTO users (username, password) VALUES (:username, :password);",
         PARAM(oatpp::String, username), PARAM(oatpp::String, password));
 
-  QUERY(getUserPassword,
-        "SELECT user_id, username, password FROM users WHERE username=:username;",
-        PARAM(oatpp::String, username));
+  QUERY(
+      getUserPassword,
+      "SELECT user_id, username, password FROM users WHERE username=:username;",
+      PARAM(oatpp::String, username));
 
   QUERY(getMessages,
         "SELECT role, content FROM messages WHERE session_id=session_id "
@@ -43,3 +45,4 @@ public:
 };
 
 #include OATPP_CODEGEN_END(DbClient)
+} // namespace Lunacd::OaRelay

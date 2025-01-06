@@ -1,4 +1,6 @@
+#include <NfoEditorAppComponents.hpp>
 #include <NfoEditorController.hpp>
+#include <NfoEditorScrapeAutocomplete.hpp>
 #include <UtilOat.hpp>
 
 #include <memory>
@@ -10,9 +12,15 @@
 
 using namespace Lunacd;
 
+void scrape(const std::filesystem::path &directory) {
+  NfoEditor::AppComponent nfoEditorComponents;
+  NfoEditor::scrapeAutocomplete(directory);
+}
+
 void runServer() {
   // Create app components
   Util::Oat::AppComponent components;
+  NfoEditor::AppComponent nfoEditorComponents;
 
   OATPP_COMPONENT(std::shared_ptr<oatpp::web::server::HttpRouter>, router);
 
@@ -34,7 +42,11 @@ void runServer() {
 auto main(int argc, char **argv) -> int {
   oatpp::base::Environment::init();
 
-  runServer();
+  if (argc > 2 && strcmp(argv[1], "scrape") == 0) {
+    scrape(std::filesystem::path{argv[2]});
+  } else {
+    runServer();
+  }
 
   oatpp::base::Environment::destroy();
 }

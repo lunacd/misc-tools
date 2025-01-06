@@ -1,13 +1,12 @@
 #include <NfoEditorAutocomplete.hpp>
+#include <NfoEditorDtos.hpp>
 
-#include <filesystem>
-#include <fstream>
+#include <oatpp/core/Types.hpp>
 #include <oatpp/core/base/Environment.hpp>
 #include <unordered_map>
 #include <unordered_set>
 
 #include <UtilStr.hpp>
-#include <UtilSys.hpp>
 
 #include <fmt/format.h>
 #include <marisa/agent.h>
@@ -15,30 +14,6 @@
 #include <marisa/trie.h>
 
 namespace Lunacd::NfoEditor {
-namespace {
-std::filesystem::path
-getCompletionFilePath(const std::string &completionSource) {
-  return Util::Sys::getProgramDataDir("nfo-editor") / "autocomplete" /
-         fmt::format("{}.txt", completionSource);
-}
-
-void exportCompletionToFile(
-    const std::string &completionSource,
-    const std::unordered_map<std::string, std::unordered_set<std::string>>
-        &originalStrings) {
-  const auto completionFilePath = getCompletionFilePath(completionSource);
-  if (!std::filesystem::exists(completionFilePath.parent_path())) {
-    std::filesystem::create_directories(completionFilePath.parent_path());
-  }
-  std::ofstream completionFile{completionFilePath};
-
-  for (const auto &[matchStr, originalStrs] : originalStrings) {
-    for (const auto &line : originalStrs) {
-      completionFile << line << "\n";
-    }
-  }
-}
-} // namespace
 void Autocomplete::registerCompletionSource(
     const std::string &completionSource) {
   getCompleter(completionSource);
@@ -64,13 +39,7 @@ void Autocomplete::addCompletionCandidate(const std::string &completionSource,
                                           const std::string &candidate) {
   const auto completer = getCompleter(completionSource);
   completer.addCandidate(candidate);
-}
-
-void Autocomplete::exportCompletionData() const {
-  for (const auto &[completionSourceName, completionData] : m_completionData) {
-    exportCompletionToFile(completionSourceName,
-                           completionData->originalStrings);
-  }
+  m_databaseClient->addCompletion(completionSource, candidate);
 }
 
 std::vector<std::string>
@@ -121,35 +90,33 @@ std::shared_ptr<Autocomplete::CompletionData>
 Autocomplete::buildCompletionData(const std::string &completionSource) {
   auto completionData = std::make_shared<CompletionData>();
 
-  // Check $XDG_DATA_HOME/nfo-editor/autocomplete/<source>.txt for completions
-  const auto completionFilePath = getCompletionFilePath(completionSource);
-  if (!std::filesystem::exists(completionFilePath)) {
-    OATPP_LOGI("NfoEditor",
-               "Completion source for %s not found. Building an empty one.",
-               completionSource.c_str());
-    completionData->trie.build(completionData->keyset);
+  OATPP_LOGI("NfoEditor", "Loading completion source %s from database.",
+             completionSource.c_str());
+
+  const auto queryResult = m_databaseClient->getCompletions(completionSource);
+  if (!queryResult->isSuccess()) {
+    OATPP_LOGE("NfoEditor",
+               "Failed to load completion source %s from database, error: %s.",
+               completionSource.c_str(),
+               queryResult->getErrorMessage()->c_str());
     return completionData;
   }
 
-  OATPP_LOGI("NfoEditor", "Loading completion source %s from disk.",
-             completionSource.c_str());
-  std::ifstream completionFile{completionFilePath};
-  std::string line;
-  while (std::getline(completionFile, line)) {
-    const auto candidate = std::string(Util::Str::trim(line));
-    const auto candidateLower = Util::Str::toLower(candidate);
-    if (candidate.empty()) {
-      continue;
-    }
+  const auto completions =
+      queryResult->fetch<oatpp::Vector<oatpp::Object<DbCompletionRow>>>();
+  for (const auto &completion : *completions) {
+    const auto candidateLower =
+        Util::Str::toLower(completion->content->c_str());
     completionData->keyset.push_back(candidateLower.c_str());
     if (const auto it = completionData->originalStrings.find(candidateLower);
         it == completionData->originalStrings.end()) {
-      completionData->originalStrings.emplace(candidateLower,
-                                              std::unordered_set{candidate});
+      completionData->originalStrings.emplace(
+          candidateLower, std::unordered_set<std::string>{completion->content});
     } else {
-      it->second.emplace(candidate);
+      it->second.emplace(completion->content);
     }
   }
+
   completionData->trie.build(completionData->keyset);
 
   return completionData;

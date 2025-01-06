@@ -39,4 +39,4 @@ COPY --from=backend_builder /backend/build/Release/src/${COMPONENT}/${COMPONENT}
 WORKDIR /
 SHELL [ "/bin/bash", "-c" ]
 ENV LUNACD_COMPONENT=${COMPONENT}
-ENTRYPOINT /backend/${LUNACD_COMPONENT}
+CMD /backend/${LUNACD_COMPONENT}

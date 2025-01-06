@@ -1,6 +1,5 @@
 add_library(util
     UtilStr.cpp
-    UtilSys.cpp
     UtilOat.cpp
     UtilFilesystem.cpp
     UtilExpiringResource.cpp
@@ -8,7 +7,6 @@ add_library(util
 
 target_sources(util PUBLIC FILE_SET HEADERS FILES
     UtilStr.hpp
-    UtilSys.hpp
     UtilOat.hpp
     UtilFilesystem.hpp
     UtilExpiringResource.hpp

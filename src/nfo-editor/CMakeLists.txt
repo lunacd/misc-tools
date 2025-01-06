@@ -5,20 +5,27 @@ target_sources(nfo-editor PRIVATE
     NfoEditorXml.cpp
     NfoEditorController.cpp
     NfoEditorAutocomplete.cpp
+    NfoEditorAppComponents.cpp
+    NfoEditorDatabaseClient.cpp
+    NfoEditorDtos.cpp
+    NfoEditorScrapeAutocomplete.cpp
 )
 
 target_sources(nfo-editor PRIVATE FILE_SET HEADERS FILES
     NfoEditorXml.hpp
     NfoEditorController.hpp
     NfoEditorAutocomplete.hpp
-    dto/NfoEditorAutocompleteResponse.hpp
-    dto/NfoEditorSaveToNfoRequest.hpp
-    dto/NfoEditorSaveToNfoResponse.hpp
+    NfoEditorAppComponents.hpp
+    NfoEditorDatabaseClient.hpp
+    NfoEditorDtos.hpp
+    NfoEditorScrapeAutocomplete.hpp
 )
 
+find_package(fmt REQUIRED)
 target_link_libraries(nfo-editor PRIVATE fmt::fmt)
+
+find_package(pugixml REQUIRED)
 target_link_libraries(nfo-editor PRIVATE pugixml::pugixml)
-target_link_libraries(nfo-editor PRIVATE util)
 
 find_package(marisa REQUIRED)
 target_link_libraries(nfo-editor PRIVATE marisa::marisa)
@@ -26,6 +33,13 @@ target_link_libraries(nfo-editor PRIVATE marisa::marisa)
 find_package(oatpp REQUIRED)
 target_link_libraries(nfo-editor PRIVATE oatpp::oatpp)
 
-find_package(Boost REQUIRED COMPONENTS url)
+find_package(oatpp-postgresql REQUIRED)
+target_link_libraries(nfo-editor PRIVATE oatpp::oatpp-postgresql)
+
+find_package(Boost REQUIRED)
 target_include_directories(nfo-editor PRIVATE ${Boost_INCLUDE_DIRS})
-target_link_libraries(nfo-editor PRIVATE Boost::url)
+
+find_package(CURL REQUIRED)
+target_link_libraries(nfo-editor PRIVATE CURL::libcurl)
+
+target_link_libraries(nfo-editor PRIVATE util)

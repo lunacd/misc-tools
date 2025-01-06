@@ -14,10 +14,16 @@ spec:
     spec:
       containers:
       - name: nfo-editor
-        image: haowenl/nfo-editor:0.0.1
+        image: haowenl/nfo-editor:0.0.3
         ports:
         - containerPort: 8000
           protocol: TCP
+        env:
+        - name: NFO_EDITOR_POSTGRESQL_URL
+          valueFrom:
+            secretKeyRef:
+              name: nfo-editor-postgresql
+              key: postgresql_url
 ---
 apiVersion: v1
 kind: Service
