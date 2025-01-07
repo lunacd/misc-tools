@@ -30,11 +30,9 @@ kind: Service
 metadata:
   name: nfo-editor
 spec:
-  type: NodePort
   selector:
     app: nfo-editor
   ports:
     - protocol: TCP
       port: 8000
       targetPort: 8000
-      nodePort: 30100
