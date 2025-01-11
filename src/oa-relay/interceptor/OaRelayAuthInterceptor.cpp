@@ -1,14 +1,13 @@
-#include <auth/OaRelayJwt.hpp>
+#include <UtilOat.hpp>
 #include <interceptor/OaRelayAuthInterceptor.hpp>
 
-namespace Lunacd::OaRelay {
-AuthInterceptor::AuthInterceptor() {
-  authEndpoints.route("POST", "users/signup", false);
-  authEndpoints.route("POST", "users/signin", false);
+#include <memory>
 
-  authEndpoints.route("GET", "swagger/*", false);
-  authEndpoints.route("GET", "api-docs/oas-3.0.0.json", false);
-}
+#include <auth/OaRelayJwt.hpp>
+#include <interceptor/OaRelayAuthInterceptor.hpp>
+#include <oatpp/core/macro/component.hpp>
+
+namespace Lunacd::OaRelay {
 
 std::shared_ptr<AuthInterceptor::OutgoingResponse>
 AuthInterceptor::intercept(const std::shared_ptr<IncomingRequest> &request) {
@@ -22,14 +21,15 @@ AuthInterceptor::intercept(const std::shared_ptr<IncomingRequest> &request) {
   auto authHeader =
       request->getHeader(oatpp::web::protocol::http::Header::AUTHORIZATION);
 
-  auto authObject = std::static_pointer_cast<Jwt::Payload>(
-      m_authHandler.handleAuthorization(authHeader));
-  if (authObject) {
-    request->putBundleData("userId", authObject->userId);
-    return nullptr; // Continue - token is valid.
+  const auto token = Util::Oat::getCookie(request, "oaRelayToken");
+  if (token) {
+    const auto payload = m_jwt->readAndVerifyToken(*token);
+    if (payload) {
+      request->putBundleData("userId", payload->userId);
+      return nullptr; // Continue - token is valid.
+    }
   }
-
-  throw oatpp::web::protocol::http::HttpError(
-      oatpp::web::protocol::http::Status::CODE_401, "Unauthorized", {});
+  return oatpp::web::protocol::http::outgoing::ResponseFactory::createResponse(
+      oatpp::web::protocol::http::Status::CODE_401, "unauthorized");
 }
 } // namespace Lunacd::OaRelay

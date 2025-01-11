@@ -1,9 +1,8 @@
 #pragma once
 
-#include <nlohmann/json.hpp>
-
 #include <jwt-cpp/jwt.h>
 #include <jwt-cpp/traits/nlohmann-json/traits.h>
+#include <nlohmann/json.hpp>
 #include <oatpp/core/Types.hpp>
 #include <oatpp/web/server/handler/AuthorizationHandler.hpp>
 
@@ -16,15 +15,12 @@ public:
     oatpp::Int32 userId;
   };
 
-private:
-  oatpp::String m_secret;
-  jwt::verifier<jwt::default_clock, traits> m_verifier;
-
-public:
-  Jwt(const oatpp::String &secret);
-
+  Jwt(const std::string &secret);
   oatpp::String createToken(const std::shared_ptr<Payload> &payload);
+  std::shared_ptr<Payload> readAndVerifyToken(const std::string &token);
 
-  std::shared_ptr<Payload> readAndVerifyToken(const oatpp::String &token);
+private:
+  std::string m_secret;
+  jwt::verifier<jwt::default_clock, traits> m_verifier;
 };
 } // namespace Lunacd::OaRelay

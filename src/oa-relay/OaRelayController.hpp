@@ -208,13 +208,25 @@ public:
       const auto token = m_jwt->createToken(payload);
       auto response = controller->createResponse(Status::CODE_200, "");
       // Set cookie to expire in 1 week
-      response->putHeader(
-          "Set-Cookie",
-          std::format(
-              "token={}; SameSite=Strict; Secure; HttpOnly; Max-Age=604800",
-              token->c_str()));
+      response->putHeader("Set-Cookie",
+                          std::format("oaRelayToken={}; SameSite=Strict; "
+                                      "Secure; HttpOnly; Max-Age=604800",
+                                      token->c_str()));
 
       return _return(response);
+    }
+  };
+
+  ENDPOINT_ASYNC("GET", "/oaRelay/isLoggedIn", IsLoggedInAsync) {
+    ENDPOINT_ASYNC_INIT(IsLoggedInAsync);
+
+    Action act() override {
+      // This route is intercepted. The fact that it even got here means the
+      // user is authenticated.
+      return _return(controller->createResponse(
+          Status::CODE_200,
+          std::format("{}",
+                      *request->getBundleData<oatpp::Int32>("userId").get())));
     }
   };
 

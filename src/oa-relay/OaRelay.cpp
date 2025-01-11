@@ -13,7 +13,6 @@ using namespace Lunacd;
 
 void runServer() {
   // Create app components
-  Util::Oat::AsyncAppComponent components;
   OaRelay::AppComponent oaRelayComponents;
 
   OATPP_COMPONENT(std::shared_ptr<oatpp::web::server::HttpRouter>, router);
