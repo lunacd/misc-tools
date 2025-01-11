@@ -53,7 +53,7 @@ getCookie(const std::shared_ptr<oatpp::web::protocol::http::incoming::Request>
   const auto rawCookies = Util::Str::split(std::string(cookieHeader), ';');
   for (const auto rawCookie : rawCookies) {
     const auto trimmedRawCookie = Util::Str::trim(rawCookie);
-    if (!Util::Str::startsWith(trimmedRawCookie, cookieName)) {
+    if (!trimmedRawCookie.starts_with(cookieName)) {
       continue;
     }
     const auto cookieSegments = Util::Str::split(trimmedRawCookie, '=');

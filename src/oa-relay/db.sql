@@ -1,6 +1,6 @@
 DROP TABLE IF EXISTS users;
 CREATE TABLE users (
-    user_id INTEGER PRIMARY KEY,
+    user_id SERIAL PRIMARY KEY,
     username TEXT NOT NULL,
     password TEXT NOT NULL
 );
@@ -10,7 +10,7 @@ CREATE UNIQUE INDEX username_index ON users(username);
 
 DROP TABLE IF EXISTS sessions;
 CREATE TABLE sessions (
-    session_row_id INTEGER PRIMARY KEY,
+    session_row_id SERIAL PRIMARY KEY,
     session_id INTEGER NOT NULL,
     user_id INTEGER NOT NULL,
     FOREIGN KEY (user_id) REFERENCES users(user_id)
@@ -21,7 +21,7 @@ CREATE UNIQUE INDEX session_id_index ON sessions(session_id);
 
 DROP TABLE IF EXISTS messages;
 CREATE TABLE messages (
-    message_id INTEGER PRIMARY KEY,
+    message_id SERIAL PRIMARY KEY,
     session_row_id INTEGER NOT NULL,
     role TEXT NOT NULL,
     message TEXT NOT NULL,

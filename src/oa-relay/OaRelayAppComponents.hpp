@@ -9,7 +9,7 @@
 
 #include <oatpp-openssl/Config.hpp>
 #include <oatpp-openssl/client/ConnectionProvider.hpp>
-#include <oatpp-sqlite/orm.hpp>
+#include <oatpp-postgresql/orm.hpp>
 #include <oatpp/core/async/Executor.hpp>
 #include <oatpp/core/macro/component.hpp>
 #include <oatpp/network/ConnectionProvider.hpp>
@@ -105,10 +105,10 @@ public:
   OATPP_CREATE_COMPONENT(std::shared_ptr<DatabaseClient>, databaseClient)
   ([] {
     auto connectionProvider =
-        std::make_shared<oatpp::sqlite::ConnectionProvider>("./oaRelay.db");
-    auto connectionPool = oatpp::sqlite::ConnectionPool::createShared(
+        std::make_shared<oatpp::postgresql::ConnectionProvider>(std::getenv("OA_RELAY_POSTGRESQL_URL"));
+    auto connectionPool = oatpp::postgresql::ConnectionPool::createShared(
         connectionProvider, 10, std::chrono::seconds(5));
-    auto executor = std::make_shared<oatpp::sqlite::Executor>(connectionPool);
+    auto executor = std::make_shared<oatpp::postgresql::Executor>(connectionPool);
 
     return std::make_shared<DatabaseClient>(executor);
   }());

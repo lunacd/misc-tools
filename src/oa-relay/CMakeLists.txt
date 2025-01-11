@@ -26,8 +26,8 @@ target_link_libraries(oa-relay PRIVATE oatpp::oatpp)
 find_package(oatpp-openssl REQUIRED)
 target_link_libraries(oa-relay PRIVATE oatpp::oatpp-openssl)
 
-find_package(oatpp-sqlite REQUIRED)
-target_link_libraries(oa-relay PRIVATE oatpp::oatpp-sqlite)
+find_package(oatpp-postgresql REQUIRED)
+target_link_libraries(oa-relay PRIVATE oatpp::oatpp-postgresql)
 
 find_package(jwt-cpp REQUIRED)
 target_link_libraries(oa-relay PRIVATE jwt-cpp::jwt-cpp)

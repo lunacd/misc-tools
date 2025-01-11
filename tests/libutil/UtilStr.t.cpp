@@ -1,3 +1,4 @@
+#include "gmock/gmock.h"
 #include <UtilStr.hpp>
 
 #include <string>
