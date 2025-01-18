@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: image-transformer
+spec:
+  selector:
+    matchLabels:
+      app: image-transformer
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: image-transformer
+    spec:
+      containers:
+        - name: image-transformer
+          image: haowenl/image-transformer:0.0.3
+          ports:
+            - containerPort: 8000
+              protocol: TCP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: image-transformer
+spec:
+  selector:
+    app: image-transformer
+  ports:
+    - protocol: TCP
+      port: 8000
+      targetPort: 8000

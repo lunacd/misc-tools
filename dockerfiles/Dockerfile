@@ -31,11 +31,18 @@ RUN source /opt/rh/gcc-toolset-14/enable && \
     cmake .. --preset conan-release && \
     cd /backend && cmake --build ./build --preset conan-release
 
-FROM registry.access.redhat.com/ubi9/ubi-minimal:latest AS app
+FROM rockylinux/rockylinux:9 AS app
+
 COPY --from=frontend_builder /ui /ui
 
 ARG COMPONENT=""
+
+# There is this library that's unfortunately linked dynamically
+RUN dnf install -y epel-release && \
+    dnf install -y ImageMagick-c++ && \
+    dnf clean all
 COPY --from=backend_builder /backend/build/Release/src/${COMPONENT}/${COMPONENT} /backend/
+
 WORKDIR /
 SHELL [ "/bin/bash", "-c" ]
 ENV LUNACD_COMPONENT=${COMPONENT}

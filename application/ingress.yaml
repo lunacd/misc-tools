@@ -1,0 +1,37 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: app-ingress
+  annotations:
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+spec:
+  ingressClassName: nginx
+  tls:
+  - hosts:
+    - site.lunacd.com
+    secretName: tls-secret
+  rules:
+  - host: site.lunacd.com 
+    http:
+      paths:
+      - pathType: Prefix
+        path: "/ui/"
+        backend:
+          service:
+            name: nfo-editor
+            port:
+              number: 8000
+      - pathType: Prefix
+        path: "/nfoEditor/"
+        backend:
+          service:
+            name: nfo-editor
+            port:
+              number: 8000
+      - pathType: Prefix
+        path: "/imageTransformer/"
+        backend:
+          service:
+            name: image-transformer
+            port:
+              number: 8000
