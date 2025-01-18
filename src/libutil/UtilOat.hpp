@@ -5,8 +5,9 @@
 
 #include <filesystem>
 #include <iterator>
-
 #include <memory>
+#include <optional>
+
 #include <oatpp/core/Types.hpp>
 #include <oatpp/core/async/Executor.hpp>
 #include <oatpp/core/macro/component.hpp>
@@ -15,7 +16,6 @@
 #include <oatpp/web/server/AsyncHttpConnectionHandler.hpp>
 #include <oatpp/web/server/HttpConnectionHandler.hpp>
 #include <oatpp/web/server/api/ApiController.hpp>
-#include <optional>
 
 namespace Lunacd::Util::Oat {
 class AppComponent {
@@ -59,6 +59,11 @@ public:
   ([] { return oatpp::parser::json::mapping::ObjectMapper::createShared(); }());
 };
 
+struct StaticFile {
+  std::string content;
+  std::string mimeType;
+};
+
 class StaticControllerBase {
 public:
   StaticControllerBase(std::filesystem::path staticRoot)
@@ -69,7 +74,7 @@ protected:
   std::unordered_map<std::filesystem::path, std::string> m_cache;
   std::mutex m_cacheLock;
 
-  std::string getFile(const std::filesystem::path &filePath);
+  std::optional<StaticFile> getFile(const std::filesystem::path &filePath);
   static std::string extToMIME(const std::string &ext);
 };
 
@@ -92,20 +97,21 @@ public:
     for (const auto &segment : segments) {
       targetPath = targetPath / segment;
     }
-    if (!std::filesystem::is_regular_file(targetPath)) {
-      return createResponse(Status::CODE_404, "Requested file not found");
-    }
 
+    // Prevent traversal outside of root
     if (!Util::Filesystem::pathIsContainedIn(targetPath, m_staticRoot)) {
-      // Prevent traversal outside of root
       return createResponse(Status::CODE_404, "Requested file not found");
     }
 
-    const auto mime = extToMIME(targetPath.extension());
-    const auto fileContent = getFile(targetPath);
+    const auto staticFile = getFile(targetPath);
 
-    auto response = createResponse(Status::CODE_200, fileContent);
-    response->putHeader(Header::CONTENT_TYPE, mime);
+    // File not found
+    if (!staticFile) {
+      return createResponse(Status::CODE_404, "Requested file not found");
+    }
+
+    auto response = createResponse(Status::CODE_200, staticFile->content);
+    response->putHeader(Header::CONTENT_TYPE, staticFile->content);
     return response;
   }
 };
@@ -137,23 +143,25 @@ public:
       for (const auto &segment : segments) {
         targetPath = targetPath / segment;
       }
-      if (!std::filesystem::is_regular_file(targetPath)) {
-        return _return(controller->createResponse(Status::CODE_404,
-                                                  "Requested file not found"));
-      }
 
+      // Prevent traversal outside of root
       if (!Util::Filesystem::pathIsContainedIn(targetPath,
                                                controller->m_staticRoot)) {
-        // Prevent traversal outside of root
         return _return(controller->createResponse(Status::CODE_404,
                                                   "Requested file not found"));
       }
 
-      const auto mime = extToMIME(targetPath.extension());
-      const auto fileContent = controller->getFile(targetPath);
+      const auto staticFile = controller->getFile(targetPath);
 
-      auto response = controller->createResponse(Status::CODE_200, fileContent);
-      response->putHeader(Header::CONTENT_TYPE, mime);
+      // File not found
+      if (!staticFile) {
+        return _return(controller->createResponse(Status::CODE_404,
+                                                  "Requested file not found"));
+      }
+
+      auto response =
+          controller->createResponse(Status::CODE_200, staticFile->content);
+      response->putHeader(Header::CONTENT_TYPE, staticFile->mimeType);
       return _return(response);
     }
   };
