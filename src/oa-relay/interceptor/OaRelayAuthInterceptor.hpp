@@ -3,10 +3,11 @@
 #include <auth/OaRelayJwt.hpp>
 
 #include <memory>
+
+#include <oatpp/core/macro/component.hpp>
 #include <oatpp/web/server/HttpRouter.hpp>
 #include <oatpp/web/server/handler/AuthorizationHandler.hpp>
 #include <oatpp/web/server/interceptor/RequestInterceptor.hpp>
-#include <oatpp/core/macro/component.hpp>
 
 namespace Lunacd::OaRelay {
 class AuthInterceptor
@@ -15,6 +16,7 @@ public:
   AuthInterceptor(OATPP_COMPONENT(std::shared_ptr<Jwt>, jwt)) : m_jwt(jwt) {
     authEndpoints.route("POST", "/oaRelay/signIn", false);
     authEndpoints.route("POST", "/oaRelay/signUp", false);
+    authEndpoints.route("GET", "/ui/*", false);
   }
 
   std::shared_ptr<OutgoingResponse>
