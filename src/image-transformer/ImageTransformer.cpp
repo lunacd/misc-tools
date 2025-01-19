@@ -14,8 +14,6 @@ void runServer() {
 
   /* Routes */
   router->addController(std::make_shared<ImageTransformer::Controller>());
-  router->addController(std::make_shared<Util::Oat::StaticController>(
-      std::filesystem::current_path() / "ui"));
 
   OATPP_COMPONENT(std::shared_ptr<oatpp::network::ConnectionHandler>,
                   connectionHandler);

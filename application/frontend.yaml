@@ -1,20 +1,20 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: image-transformer
+  name: frontend
 spec:
   selector:
     matchLabels:
-      app: image-transformer
+      app: frontend
   replicas: 1
   template:
     metadata:
       labels:
-        app: image-transformer
+        app: frontend
     spec:
       containers:
-        - name: image-transformer
-          image: haowenl/image-transformer:0.0.4
+        - name: frontend
+          image: haowenl/frontend:0.0.1
           ports:
             - containerPort: 8000
               protocol: TCP
@@ -22,11 +22,11 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: image-transformer
+  name: frontend
 spec:
   selector:
-    app: image-transformer
+    app: frontend
   ports:
     - protocol: TCP
-      port: 8000
-      targetPort: 8000
+      port: 3000
+      targetPort: 3000

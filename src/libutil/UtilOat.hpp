@@ -3,7 +3,6 @@
 #include <UtilFilesystem.hpp>
 #include <UtilStr.hpp>
 
-#include <filesystem>
 #include <iterator>
 #include <memory>
 #include <optional>
@@ -58,116 +57,6 @@ public:
                          apiObjectMapper)
   ([] { return oatpp::parser::json::mapping::ObjectMapper::createShared(); }());
 };
-
-struct StaticFile {
-  std::string content;
-  std::string mimeType;
-};
-
-class StaticControllerBase {
-public:
-  StaticControllerBase(std::filesystem::path staticRoot)
-      : m_staticRoot(std::move(staticRoot)) {}
-
-protected:
-  const std::filesystem::path m_staticRoot;
-  std::unordered_map<std::filesystem::path, std::string> m_cache;
-  std::mutex m_cacheLock;
-
-  std::optional<StaticFile> getFile(const std::filesystem::path &filePath);
-  static std::string extToMIME(const std::string &ext);
-};
-
-#include OATPP_CODEGEN_BEGIN(ApiController)
-
-class StaticController : public oatpp::web::server::api::ApiController,
-                         public StaticControllerBase {
-public:
-  StaticController(std::filesystem::path staticRoot,
-                   OATPP_COMPONENT(std::shared_ptr<ObjectMapper>, objectMapper))
-      : oatpp::web::server::api::ApiController(objectMapper),
-        StaticControllerBase(std::move(staticRoot)) {}
-
-  ENDPOINT("GET", "/ui/*", staticFiles,
-           REQUEST(std::shared_ptr<IncomingRequest>, request)) {
-    const std::string tail = request->getPathTail();
-    const auto segments = Util::Str::split(tail, '/');
-    auto targetPath = m_staticRoot;
-
-    for (const auto &segment : segments) {
-      targetPath = targetPath / segment;
-    }
-
-    // Prevent traversal outside of root
-    if (!Util::Filesystem::pathIsContainedIn(targetPath, m_staticRoot)) {
-      return createResponse(Status::CODE_404, "Requested file not found");
-    }
-
-    const auto staticFile = getFile(targetPath);
-
-    // File not found
-    if (!staticFile) {
-      return createResponse(Status::CODE_404, "Requested file not found");
-    }
-
-    auto response = createResponse(Status::CODE_200, staticFile->content);
-    response->putHeader(Header::CONTENT_TYPE, staticFile->content);
-    return response;
-  }
-};
-
-#include OATPP_CODEGEN_END(ApiController)
-
-#include OATPP_CODEGEN_BEGIN(ApiController)
-
-class AsyncStaticController : public oatpp::web::server::api::ApiController,
-                              public StaticControllerBase {
-public:
-  typedef AsyncStaticController __ControllerType;
-  AsyncStaticController(std::filesystem::path staticRoot,
-                        OATPP_COMPONENT(std::shared_ptr<ObjectMapper>,
-                                        objectMapper))
-      : oatpp::web::server::api::ApiController(objectMapper),
-        StaticControllerBase(std::move(staticRoot)) {}
-
-  friend class StaticFilesAsync;
-
-  ENDPOINT_ASYNC("GET", "/ui/*", StaticFilesAsync) {
-    ENDPOINT_ASYNC_INIT(StaticFilesAsync);
-
-    Action act() {
-      const std::string tail = request->getPathTail();
-      const auto segments = Util::Str::split(tail, '/');
-      auto targetPath = controller->m_staticRoot;
-
-      for (const auto &segment : segments) {
-        targetPath = targetPath / segment;
-      }
-
-      // Prevent traversal outside of root
-      if (!Util::Filesystem::pathIsContainedIn(targetPath,
-                                               controller->m_staticRoot)) {
-        return _return(controller->createResponse(Status::CODE_404,
-                                                  "Requested file not found"));
-      }
-
-      const auto staticFile = controller->getFile(targetPath);
-
-      // File not found
-      if (!staticFile) {
-        return _return(controller->createResponse(Status::CODE_404,
-                                                  "Requested file not found"));
-      }
-
-      auto response =
-          controller->createResponse(Status::CODE_200, staticFile->content);
-      response->putHeader(Header::CONTENT_TYPE, staticFile->mimeType);
-      return _return(response);
-    }
-  };
-};
-
-#include OATPP_CODEGEN_END(ApiController)
 
 template <typename T1, typename T2>
 std::vector<T1> oatppVectorToStdVector(const oatpp::Vector<T2> &oatppVec) {

@@ -1,7 +1,6 @@
 #include <NfoEditorAppComponents.hpp>
 #include <NfoEditorController.hpp>
 #include <NfoEditorScrapeAutocomplete.hpp>
-#include <UtilOat.hpp>
 
 #include <memory>
 
@@ -26,8 +25,6 @@ void runServer() {
 
   /* Routes */
   router->addController(std::make_shared<NfoEditor::Controller>());
-  router->addController(std::make_shared<Util::Oat::StaticController>(
-      std::filesystem::current_path() / "ui"));
 
   OATPP_COMPONENT(std::shared_ptr<oatpp::network::ConnectionHandler>,
                   connectionHandler);

@@ -1,13 +1,4 @@
-FROM rockylinux/rockylinux:9 AS frontend_builder
-# Install nodejs
-RUN dnf module install -y nodejs:22/development && \
-    dnf clean all
-RUN npm i -g corepack && corepack enable
-# Build frontend
-COPY frontend /frontend
-RUN cd frontend && pnpm i && pnpm run build && mv ./out /ui/
-
-FROM rockylinux/rockylinux:9 AS backend_builder
+FROM rockylinux/rockylinux:9 AS builder
 # Install system dependencies
 RUN dnf install -y 'dnf-command(config-manager)' && \
     dnf config-manager --set-enabled crb && dnf install -y epel-release && crb enable && \
@@ -33,15 +24,13 @@ RUN source /opt/rh/gcc-toolset-14/enable && \
 
 FROM rockylinux/rockylinux:9 AS app
 
-COPY --from=frontend_builder /ui /ui
-
 ARG COMPONENT=""
 
 # There is this library that's unfortunately linked dynamically
 RUN dnf install -y epel-release && \
     dnf install -y ImageMagick-c++ && \
     dnf clean all
-COPY --from=backend_builder /backend/build/Release/src/${COMPONENT}/${COMPONENT} /backend/
+COPY --from=builder /backend/build/Release/src/${COMPONENT}/${COMPONENT} /backend/
 
 WORKDIR /
 SHELL [ "/bin/bash", "-c" ]

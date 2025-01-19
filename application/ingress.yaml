@@ -18,9 +18,9 @@ spec:
         path: "/ui/"
         backend:
           service:
-            name: nfo-editor
+            name: frontend
             port:
-              number: 8000
+              number: 3000
       - pathType: Prefix
         path: "/nfoEditor/"
         backend:

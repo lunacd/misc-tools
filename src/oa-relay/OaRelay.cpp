@@ -1,7 +1,6 @@
 
 #include <OaRelayAppComponents.hpp>
 #include <OaRelayController.hpp>
-#include <UtilOat.hpp>
 
 #include <memory>
 
@@ -19,8 +18,6 @@ void runServer() {
 
   /* Routes */
   router->addController(std::make_shared<OaRelay::Controller>());
-  router->addController(std::make_shared<Util::Oat::AsyncStaticController>(
-      std::filesystem::current_path() / "ui"));
 
   OATPP_COMPONENT(std::shared_ptr<oatpp::network::ConnectionHandler>,
                   connectionHandler);
