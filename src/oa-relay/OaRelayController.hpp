@@ -243,6 +243,32 @@ public:
     }
   };
 
+  ENDPOINT_ASYNC("GET", "/oaRelay/getMessages", GetMessagesAsync) {
+    ENDPOINT_ASYNC_INIT(GetMessagesAsync);
+    OATPP_COMPONENT(std::shared_ptr<DatabaseClient>, m_databaseClient);
+
+    Action act() override {
+      auto queryResult = m_databaseClient->getMessages(1);
+      auto messages =
+          queryResult
+              ->fetch<oatpp::Vector<oatpp::Object<CompletionsMessage>>>();
+      if (messages && messages->empty()) {
+        // Session does not exist, create one
+        const auto userId = request->getBundleData<oatpp::Int32>("userId");
+        m_databaseClient->newSession(userId, 1);
+        m_databaseClient->newMessage(userId, 1, "system",
+                                     "You are a helpful assistant.", 0);
+        queryResult = m_databaseClient->getMessages(1);
+        messages =
+            queryResult
+                ->fetch<oatpp::Vector<oatpp::Object<CompletionsMessage>>>();
+      }
+      auto dto = GetMessagesResponse::createShared();
+      dto->messages = messages;
+      return _return(controller->createDtoResponse(Status::CODE_200, messages));
+    }
+  };
+
   ENDPOINT_ASYNC("POST", "/oaRelay/completions", CompletionsAsync) {
     ENDPOINT_ASYNC_INIT(CompletionsAsync);
     OATPP_COMPONENT(std::shared_ptr<oatpp::async::Executor>, m_executor);

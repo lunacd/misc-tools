@@ -23,15 +23,22 @@ public:
       PARAM(oatpp::String, username));
 
   QUERY(getMessages,
-        "SELECT role, content FROM messages WHERE session_id=session_id "
-        "ORDER BY order;",
+        "SELECT role, message AS content FROM messages "
+        "JOIN sessions ON sessions.session_row_id = messages.session_row_id "
+        "WHERE session_id=:session_id "
+        "ORDER BY msg_order;",
         PARAM(oatpp::Int32, session_id));
 
+  QUERY(newSession,
+        "INSERT INTO sessions (session_id, user_id) VALUES (:session_id, "
+        ":user_id)",
+        PARAM(oatpp::Int32, user_id), PARAM(oatpp::Int32, session_id));
+
   QUERY(newMessage,
-        "INSERT INTO messages (session_row_id, role, content, order) "
+        "INSERT INTO messages (session_row_id, role, message, msg_order) "
         "VALUES ("
         "(SELECT session_row_id FROM sessions "
-        "WHERE user_id=:user_id, session_id=:session_id), "
+        "WHERE user_id=:user_id AND session_id=:session_id), "
         ":role, :content, :order);",
         PARAM(oatpp::Int32, user_id), PARAM(oatpp::Int32, session_id),
         PARAM(oatpp::String, role), PARAM(oatpp::String, content),

@@ -19,6 +19,12 @@ class CompletionsRequest : public oatpp::DTO {
   DTO_FIELD(String, message);
 };
 
+class GetMessagesResponse : public oatpp::DTO {
+  DTO_INIT(GetMessagesResponse, DTO);
+
+  DTO_FIELD(Vector<Object<CompletionsMessage>>, messages);
+};
+
 class OaCompletionsRequest : public oatpp::DTO {
   DTO_INIT(OaCompletionsRequest, DTO);
 
