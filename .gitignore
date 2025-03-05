@@ -3,3 +3,5 @@
 
 # Sqlite database file
 *.db
+
+.qmlls.ini

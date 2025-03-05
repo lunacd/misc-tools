@@ -5,5 +5,6 @@ find_package(ImageMagick REQUIRED COMPONENTS Magick++)
 
 # Projects
 add_subdirectory(libutil)
+add_subdirectory(libui/Lunacd)
 add_subdirectory(nfo-editor)
 add_subdirectory(image-transformer)
