@@ -16,7 +16,7 @@ FocusScope {
     height: rectangle.height
     Component.onCompleted: () => {
         if (autocomplete) {
-            LunacdAutocomplete.registerCompletionSource(completionSource);
+            LunacdAutocomplete.registerCompletionSource(completionSource); // qmllint disable unqualified
         }
     }
 
@@ -124,7 +124,7 @@ FocusScope {
                         return;
                     }
 
-                    const completions = LunacdAutocomplete.autocomplete(suggestionBox.completionSource, prefix);
+                    const completions = LunacdAutocomplete.autocomplete(suggestionBox.completionSource, prefix); // qmllint disable unqualified
                     completions.forEach(completion => {
                         suggestionPanel.model.append({
                             "completionText": completion
