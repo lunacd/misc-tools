@@ -1,18 +1,41 @@
-add_executable(image-transformer
+set(sources
     ImageTransformer.cpp
-    ImageTransformerController.cpp
+    ImageTransformerQtBridge.cpp
 )
+
+if (WIN32)
+    qt_add_executable(image-transformer
+        WIN32
+        ${sources}
+    )
+else ()
+    qt_add_executable(image-transformer
+        ${sources}
+    )
+endif ()
+
 target_sources(image-transformer PRIVATE FILE_SET HEADERS FILES
-    ImageTransformerController.hpp
+    ImageTransformerQtBridge.hpp
 )
 
-target_link_libraries(image-transformer PRIVATE util)
+qt_add_qml_module(image-transformer
+    URI ImageTransformer
+    VERSION 1.0
+    QML_FILES
+        ImageTransformer.qml
+    RESOURCE_PREFIX /qt/qml/
+    IMPORTS TARGET ui
+)
+qt_import_qml_plugins(image-transformer)
 
-find_package(ImageMagick REQUIRED)
-target_link_libraries(image-transformer PRIVATE ImageMagick::Magick++)
+find_package(ImageMagick REQUIRED COMPONENTS Magick++)
 
-find_package(fmt REQUIRED)
-target_link_libraries(image-transformer PRIVATE fmt::fmt)
-
-find_package(Boost REQUIRED)
-target_include_directories(image-transformer PRIVATE ${Boost_INCLUDE_DIRS})
+target_link_libraries(image-transformer PRIVATE
+    util
+    uiplugin
+    Qt6::Qml
+    Qt6::Quick
+    Qt6::Widgets
+    Qt6::Concurrent
+    ImageMagick::Magick++
+)

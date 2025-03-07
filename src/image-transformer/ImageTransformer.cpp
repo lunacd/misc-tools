@@ -1,34 +1,18 @@
-#include <ImageTransformerController.hpp>
-#include <UtilOat.hpp>
+#include <ImageTransformerQtBridge.hpp>
 
-#include <oatpp/core/base/Environment.hpp>
-#include <oatpp/network/Server.hpp>
+#include <QApplication>
+#include <QQmlApplicationEngine>
+#include <QQmlContext>
 
-using namespace Lunacd;
-
-void runServer() {
-  // Create app components
-  Util::Oat::AppComponent components;
-
-  OATPP_COMPONENT(std::shared_ptr<oatpp::web::server::HttpRouter>, router);
-
-  /* Routes */
-  router->addController(std::make_shared<ImageTransformer::Controller>());
-
-  OATPP_COMPONENT(std::shared_ptr<oatpp::network::ConnectionHandler>,
-                  connectionHandler);
-  OATPP_COMPONENT(std::shared_ptr<oatpp::network::ServerConnectionProvider>,
-                  connectionProvider);
-
-  oatpp::network::Server server(connectionProvider, connectionHandler);
-
-  server.run();
-}
+using namespace Lunacd::ImageTransformer;
 
 auto main(int argc, char **argv) -> int {
-  oatpp::base::Environment::init();
+  QApplication app(argc, argv);
 
-  runServer();
+  QQmlApplicationEngine engine;
 
-  oatpp::base::Environment::destroy();
+  engine.load(QUrl(
+      QStringLiteral("qrc:/qt/qml/ImageTransformer/ImageTransformer.qml")));
+
+  return QApplication::exec();
 }
