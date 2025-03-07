@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <string>
 #include <string_view>
+#include <iterator>
 
 namespace Lunacd::Util::Str {
 std::string_view trim(std::string_view input) {
