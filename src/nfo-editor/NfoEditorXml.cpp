@@ -1,12 +1,15 @@
 #include <NfoEditorXml.hpp>
 
+#include <filesystem>
 #include <sstream>
+#include <stdexcept>
 
 #include <fmt/format.h>
 #include <pugixml.hpp>
+#include <stdexcept>
 
 namespace Lunacd::NfoEditor {
-std::string Xml::exportToStr() const {
+void Xml::saveToFile(const std::filesystem::path &path) const {
   pugi::xml_document doc;
   pugi::xml_node root = doc.append_child("movie");
 
@@ -28,7 +31,9 @@ std::string Xml::exportToStr() const {
   }
 
   std::stringstream ss;
-  doc.save(ss);
-  return ss.str();
+  bool success = doc.save_file(path.generic_string().c_str());
+  if (!success) {
+    throw std::runtime_error("Failed to save Xml file");
+  }
 }
 } // namespace Lunacd::NfoEditor

@@ -1,49 +1,29 @@
-#include <NfoEditorAppComponents.hpp>
-#include <NfoEditorController.hpp>
-#include <NfoEditorScrapeAutocomplete.hpp>
+#include <QApplication>
+#include <QQmlApplicationEngine>
+#include <QQmlContext>
+#include <qqml.h>
 
-#include <memory>
-
-#include <oatpp/network/Server.hpp>
-#include <oatpp/network/tcp/server/ConnectionProvider.hpp>
-#include <oatpp/parser/json/mapping/ObjectMapper.hpp>
-#include <oatpp/web/server/HttpConnectionHandler.hpp>
+#include <NfoEditorQtBridge.hpp>
 
 using namespace Lunacd;
 
-void scrape(const std::filesystem::path &directory) {
-  NfoEditor::AppComponent nfoEditorComponents;
-  NfoEditor::scrapeAutocomplete(directory);
-}
-
-void runServer() {
-  // Create app components
-  Util::Oat::AppComponent components;
-  NfoEditor::AppComponent nfoEditorComponents;
-
-  OATPP_COMPONENT(std::shared_ptr<oatpp::web::server::HttpRouter>, router);
-
-  /* Routes */
-  router->addController(std::make_shared<NfoEditor::Controller>());
-
-  OATPP_COMPONENT(std::shared_ptr<oatpp::network::ConnectionHandler>,
-                  connectionHandler);
-  OATPP_COMPONENT(std::shared_ptr<oatpp::network::ServerConnectionProvider>,
-                  connectionProvider);
-
-  oatpp::network::Server server(connectionProvider, connectionHandler);
-
-  server.run();
-}
-
 auto main(int argc, char **argv) -> int {
-  oatpp::base::Environment::init();
+  QApplication app(argc, argv);
 
-  if (argc > 2 && strcmp(argv[1], "scrape") == 0) {
-    scrape(std::filesystem::path{argv[2]});
-  } else {
-    runServer();
-  }
+  qmlRegisterType<NfoEditor::QtBridge>("com.lunacd.NfoEditorQtBridge", 0, 1,
+                                       "NfoEditorQtBridge");
 
-  oatpp::base::Environment::destroy();
+  // Create bridge before the engine because they will be destructed in reverse
+  // order.
+  NfoEditor::QtBridge bridge;
+
+  QQmlApplicationEngine engine;
+
+  // Set bridge as a property of root context
+  engine.rootContext()->setContextProperty("bridge", &bridge);
+
+  engine.load(
+      QUrl(QStringLiteral("qrc:/qt/qml/NfoEditor/NfoEditor.qml")));
+
+  return QApplication::exec();
 }
