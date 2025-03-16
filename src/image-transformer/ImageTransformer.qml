@@ -56,6 +56,13 @@ ApplicationWindow {
             }
 
             LunacdButton {
+                text: "Clear Selection"
+                onClicked: () => {
+                    repeater.model.clear();
+                }
+            }
+
+            LunacdButton {
                 text: "Convert"
                 onClicked: () => {
                     const images = [];
