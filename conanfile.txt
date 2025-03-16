@@ -8,9 +8,6 @@ nlohmann_json/3.11.3
 libcurl/8.11.1
 ms-gsl/4.0.0
 
-[options]
-libpq/*:with_openssl=True
-
 [generators]
 CMakeDeps
 CMakeToolchain

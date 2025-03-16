@@ -1,7 +1,0 @@
-.userMessage {
-    @apply items-end;
-}
-
-.userMessage,.gptMessage {
-    @apply flex flex-col gap-2;
-}
