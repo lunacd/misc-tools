@@ -6,19 +6,8 @@ else()
     qt_add_executable(nfo-editor)
 endif()
 
-target_sources(nfo-editor PRIVATE
-    NfoEditor.cpp
-    NfoEditorXml.cpp
-    NfoEditorQtBridge.cpp
-)
-
-target_sources(nfo-editor PRIVATE FILE_SET HEADERS FILES
-    NfoEditorXml.hpp
-    NfoEditorQtBridge.hpp
-)
-
 qt_add_qml_module(nfo-editor
-    URI NfoEditor
+    URI nfo-editor
     VERSION 1.0
     QML_FILES
         NfoEditor.qml
@@ -29,6 +18,17 @@ qt_add_qml_module(nfo-editor
         icons/x.svg
     RESOURCE_PREFIX /qt/qml/
     IMPORTS TARGET ui
+)
+
+target_sources(nfo-editor PRIVATE
+    NfoEditor.cpp
+    NfoEditorXml.cpp
+    NfoEditorQtBridge.cpp
+)
+
+target_sources(nfo-editor PRIVATE FILE_SET HEADERS FILES
+    NfoEditorXml.hpp
+    NfoEditorQtBridge.hpp
 )
 
 target_include_directories(nfo-editor PRIVATE .)

@@ -6,7 +6,7 @@ import QtQuick.Layouts
 import QtQuick.Dialogs
 import Qt.labs.platform
 
-import Lunacd
+import libui
 
 ApplicationWindow {
     id: window

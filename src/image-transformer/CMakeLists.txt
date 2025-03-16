@@ -1,25 +1,23 @@
-set(sources
-    ImageTransformer.cpp
-    ImageTransformerQtBridge.cpp
-)
-
-if (WIN32)
+if (WIN32 AND (NOT CMAKE_BUILD_TYPE STREQUAL Debug))
     qt_add_executable(image-transformer
         WIN32
-        ${sources}
     )
 else ()
     qt_add_executable(image-transformer
-        ${sources}
     )
 endif ()
+
+target_sources(image-transformer PRIVATE
+    ImageTransformer.cpp
+    ImageTransformerQtBridge.cpp
+)
 
 target_sources(image-transformer PRIVATE FILE_SET HEADERS FILES
     ImageTransformerQtBridge.hpp
 )
 
 qt_add_qml_module(image-transformer
-    URI ImageTransformer
+    URI image-transformer
     VERSION 1.0
     QML_FILES
         ImageTransformer.qml

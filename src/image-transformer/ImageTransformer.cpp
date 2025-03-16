@@ -12,7 +12,7 @@ auto main(int argc, char **argv) -> int {
   QQmlApplicationEngine engine;
 
   engine.load(QUrl(
-      QStringLiteral("qrc:/qt/qml/ImageTransformer/ImageTransformer.qml")));
+      QStringLiteral("qrc:/qt/qml/image-transformer/ImageTransformer.qml")));
 
   return QApplication::exec();
 }

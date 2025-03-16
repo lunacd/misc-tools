@@ -1,17 +1,17 @@
+pragma ComponentBehavior: Bound
+
 import QtQuick
 import QtQuick.Layouts
-import QtQuick.Controls
 
-import Lunacd
+import libui
 
 FocusScope {
+    id: labeledListInput
     property alias text: suggestionBox.text
     property alias label: label.text
     required property bool autocomplete
     property string completionSource
     property list<string> items: []
-
-    id: labeledListInput
     implicitHeight: label.height + column.height + column.anchors.topMargin
 
     function addItem() {
@@ -40,7 +40,7 @@ FocusScope {
             Layout.fillWidth: true
 
             LunacdSuggestionBox {
-                id: suggestionBox        
+                id: suggestionBox
 
                 Layout.fillWidth: true
 
@@ -48,12 +48,12 @@ FocusScope {
                 completionSource: labeledListInput.completionSource
                 focus: true
 
-                onAccepted: () => addItem()
+                onAccepted: () => labeledListInput.addItem()
             }
 
             LunacdButton {
                 icon: "icons/plus.svg"
-                onClicked: () => addItem()
+                onClicked: () => labeledListInput.addItem()
             }
         }
 
@@ -63,13 +63,15 @@ FocusScope {
             Layout.fillWidth: true
 
             Repeater {
-                model: items
+                model: labeledListInput.items
 
                 NfoEditorRemovableItem {
                     required property string modelData
                     required property int index
                     text: modelData
-                    onRemoved: () => { items.splice(index, 1) }
+                    onRemoved: () => {
+                        labeledListInput.items.splice(index, 1);
+                    }
                 }
             }
         }

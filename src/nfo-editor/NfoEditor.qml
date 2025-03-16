@@ -4,7 +4,7 @@ import QtQuick.Layouts
 import QtQuick.Dialogs
 import Qt.labs.platform
 
-import Lunacd
+import libui
 
 ApplicationWindow
 {
@@ -104,7 +104,7 @@ ApplicationWindow
         title: "Please choose where to save to"
         fileMode: FileDialog.SaveFile
         onAccepted: () => {
-            NfoEditorQtBridge.saveToXml(currentFile, title.text.trim(), studio.text.trim(), actors.items, tags.items);
+            NfoEditorQtBridge.saveToXml(currentFile, title.text.trim(), studio.text.trim(), actors.items, tags.items); // qmllint disable unqualified
 
             // Save completion to file
             LunacdAutocomplete.addCompletionCandidate("studio", studio.text.trim());

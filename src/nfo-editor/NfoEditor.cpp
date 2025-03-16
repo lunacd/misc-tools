@@ -22,8 +22,7 @@ auto main(int argc, char **argv) -> int {
   // Set bridge as a property of root context
   engine.rootContext()->setContextProperty("bridge", &bridge);
 
-  engine.load(
-      QUrl(QStringLiteral("qrc:/qt/qml/NfoEditor/NfoEditor.qml")));
+  engine.load(QUrl(QStringLiteral("qrc:/qt/qml/nfo-editor/NfoEditor.qml")));
 
   return QApplication::exec();
 }
