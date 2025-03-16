@@ -1,5 +1,5 @@
 qt_add_qml_module(ui
-    URI "Lunacd"
+    URI libui
     VERSION 1.0
     STATIC
     QML_FILES
@@ -8,15 +8,10 @@ qt_add_qml_module(ui
         LunacdSuggestionBox.qml
         LunacdSuggestionPanel.qml
         LunacdSuggestionItem.qml
+    SOURCES
+        LunacdAutocomplete.cpp
+        LunacdAutocomplete.hpp
     RESOURCE_PREFIX /qt/qml
-)
-
-target_sources(ui PRIVATE
-    LunacdAutocomplete.cpp
-)
-
-target_sources(ui PRIVATE FILE_SET HEADERS FILES
-    LunacdAutocomplete.hpp
 )
 
 find_package(marisa REQUIRED)
