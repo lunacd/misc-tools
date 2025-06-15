@@ -42,9 +42,6 @@ target_link_libraries(nfo-editor PRIVATE pugixml::pugixml)
 find_package(marisa REQUIRED)
 target_link_libraries(nfo-editor PRIVATE marisa::marisa)
 
-find_package(oatpp REQUIRED)
-target_link_libraries(nfo-editor PRIVATE oatpp::oatpp)
-
 find_package(stduuid REQUIRED)
 target_include_directories(nfo-editor PRIVATE ${stduuid_INCLUDE_DIRS})
 
