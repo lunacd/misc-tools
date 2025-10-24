@@ -16,7 +16,6 @@ qt_add_qml_module(nfo-editor
     RESOURCES
         icons/plus.svg
         icons/x.svg
-    RESOURCE_PREFIX /qt/qml/
     IMPORTS TARGET ui
 )
 

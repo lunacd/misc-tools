@@ -13,6 +13,7 @@ find_package(Qt6 REQUIRED COMPONENTS Core Qml Quick Widgets Concurrent)
 qt_standard_project_setup(REQUIRES 6.5)
 set(QT_QML_GENERATE_QMLLS_INI ON)
 
+qt_policy(SET QTP0001 NEW)
 qt_policy(SET QTP0004 NEW)
 qt_policy(SET QTP0005 NEW)
 

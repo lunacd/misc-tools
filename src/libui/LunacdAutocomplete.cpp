@@ -37,6 +37,7 @@ void exportCompletionToFile(
   }
 }
 } // namespace
+
 void Autocomplete::registerCompletionSource(const QString &completionSource) {
   getCompleter(completionSource.toStdString());
 }

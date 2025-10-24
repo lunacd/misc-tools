@@ -52,7 +52,7 @@ FocusScope {
             }
 
             LunacdButton {
-                icon: "icons/plus.svg"
+                icon: "qrc:/qt/qml/nfo-editor/icons/plus.svg"
                 onClicked: () => labeledListInput.addItem()
             }
         }

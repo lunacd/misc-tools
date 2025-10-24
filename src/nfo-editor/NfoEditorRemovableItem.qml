@@ -43,7 +43,7 @@ Item {
         }
 
         Image {
-            source: "icons/x.svg"
+            source: "qrc:/qt/qml/nfo-editor/icons/x.svg"
             anchors.fill: parent
             anchors.leftMargin: 2
             anchors.rightMargin: 2
