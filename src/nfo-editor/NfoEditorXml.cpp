@@ -30,6 +30,8 @@ void Xml::saveToFile(const std::filesystem::path &path) const {
     tagNode.append_child(pugi::node_pcdata).set_value(tag.c_str());
   }
 
+  std::filesystem::path outputPath = path;
+  outputPath.replace_extension(".nfo");
   std::stringstream ss;
   bool success = doc.save_file(path.generic_string().c_str());
   if (!success) {
