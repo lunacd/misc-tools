@@ -33,7 +33,7 @@ void Xml::saveToFile(const std::filesystem::path &path) const {
   std::filesystem::path outputPath = path;
   outputPath.replace_extension(".nfo");
   std::stringstream ss;
-  bool success = doc.save_file(path.generic_string().c_str());
+  bool success = doc.save_file(outputPath.generic_string().c_str());
   if (!success) {
     throw std::runtime_error("Failed to save Xml file");
   }
