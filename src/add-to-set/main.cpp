@@ -32,18 +32,8 @@ find_poster_in_folder(const std::filesystem::path &folder) {
   return std::nullopt;
 }
 
-int main(int argc, char *argv[]) {
-  if (argc < 3) {
-    std::cerr << "Usage: " << argv[0] << " <set_name> <movies...>" << std::endl;
-    return 1;
-  }
-
-  std::string set_name = argv[1];
-  std::vector<std::filesystem::path> movies;
-  for (int i = 2; i < argc; i++) {
-    movies.emplace_back(argv[i]);
-  }
-
+void add_to_set(const std::string &set_name,
+                const std::vector<std::filesystem::path> &movies) {
   // 1: Create set folder
   std::filesystem::path set_path(std::format("{} [boxset]", set_name));
   std::filesystem::create_directory(set_path);
@@ -55,7 +45,8 @@ int main(int argc, char *argv[]) {
     std::filesystem::path normalized =
         movie.filename().empty() ? movie.parent_path() : movie;
     std::filesystem::path destination_path = set_path / normalized.filename();
-    std::cout << "Moving " << normalized << " to " << destination_path << std::endl;
+    std::cout << "Moving " << normalized << " to " << destination_path
+              << std::endl;
     std::filesystem::rename(normalized, destination_path);
 
     if (first_movie.empty()) {
@@ -84,5 +75,25 @@ int main(int argc, char *argv[]) {
     }
   } else {
     std::cerr << "No movies were moved to the set folder." << std::endl;
+  }
+}
+
+int main(int argc, char *argv[]) {
+  if (argc < 3) {
+    std::cerr << "Usage: " << argv[0] << " <set_name> <movies...>" << std::endl;
+    return 1;
+  }
+
+  std::string set_name = argv[1];
+  std::vector<std::filesystem::path> movies;
+  for (int i = 2; i < argc; i++) {
+    movies.emplace_back(argv[i]);
+  }
+
+  try {
+    add_to_set(set_name, movies);
+  } catch (const std::exception &e) {
+    std::cerr << "Error: " << e.what() << std::endl;
+    return 1;
   }
 }
