@@ -59,6 +59,7 @@ FocusScope {
     function closeSuggestion() {
         suggestionPanel.selectedIndex = undefined;
         suggestionPopup.close();
+        suggestionPanel.model.clear();
     }
 
     Rectangle {
